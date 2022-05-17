@@ -13,7 +13,6 @@ def is_carry_over(ts, D, T):
 def demand_based_function_CO(ts, CLo, CHi, T, L):
   return min(CLo, ts % T) if L == gt.Level.LO else CHi
 
-
 def lcm(list):
   return reduce(lambda x, y: (x * y)//math.gcd(x, y), list)
 
@@ -37,27 +36,19 @@ def calculate_t_max(task_set):
 def calculate_dbf(t, ts, task_set):
   demand = 0
   demand_CO = 0
-  max_CHi = 0
+  # max_CHi = 0
   for task in task_set:
     CLo, CHi, DLo, D, T, L = task
     demand += demand_based_function(ts, CLo, DLo, T)
     if L == gt.Level.HI:
-      if CHi > max_CHi:
-        max_CHi = CHi
+      # if CHi > max_CHi:
+      #   max_CHi = CHi
       demand += demand_based_function(t-ts-1, CHi, D, T)
     if is_carry_over(ts, D, T):
       demand_CO += demand_based_function_CO(ts, CLo, CHi, T, L)
-  demand_CO = min(max_CHi, demand_CO)
+  # demand_CO = min(max_CHi, demand_CO)
   demand += demand_CO
   return demand
-
-# def schedulability_test(task_set):
-#   tmax = int(gt.calculate_t_max(task_set))
-#   for t in range(tmax + 1):
-#     for ts in range(gt):
-#       if calculate_dbf(t, ts, task_set) > t:
-#         return False
-#   return True
 
 
 

@@ -49,7 +49,7 @@ def test_calculate_dbf_with_80_seed():
   ts = t-t//4
   task_set = gt.create_task_set()
 
-  assert dbf.calculate_dbf(t, ts, task_set) == 63
+  assert dbf.calculate_dbf(t, ts, task_set) == 86
 
 def test_calculate_dbf_with_10_seed():
   r.seed(10)
@@ -57,5 +57,5 @@ def test_calculate_dbf_with_10_seed():
   ts = t//4
   task_set = gt.create_task_set()
 
-  assert dbf.calculate_dbf(t, ts, task_set) == 63
+  assert dbf.calculate_dbf(t, ts, task_set) == 39
 

@@ -3,8 +3,6 @@ import math
 from enum import Enum 
 from functools import reduce
 
-NUM_TASK_SET = 100
-
 class Level(Enum):
     HI = 1
     LO = 2
