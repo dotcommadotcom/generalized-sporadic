@@ -47,7 +47,7 @@ def calculate_dbf(t, ts, task_set):
 def schedulability_test(task_set):
   t_max = calculate_t_max(task_set)
   for i in range(2, t_max + 1):
-    for j in range(1, i):
+    for j in range(i-1, 0, -1):
       if calculate_dbf(i, j, task_set) > i:
         return False
   return True
