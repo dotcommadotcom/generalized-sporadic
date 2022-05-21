@@ -4,15 +4,6 @@ import math
 import generate_tasks as gt
 import random as r
 
-def demand_based_function(t, C, D, T):
-  return C * max(0, math.floor((t - D)/T) + 1)
-
-def is_carry_over(ts, t, D, T):
-  return D - ts % T > 0 and ts + D - ts % T <= t
-
-def demand_based_function_CO(ts, CLo, CHi, T, L):
-  return min(CLo, ts % T) if L == gt.Level.LO else CHi
-
 def lcm(list):
   return reduce(lambda x, y: (x * y)//math.gcd(x, y), list)
 
@@ -33,15 +24,28 @@ def calculate_t_max(task_set):
 
   return math.floor(t_max) if t_max > 0 else lcm(Ts) + max(Ds)
 
+def demand_based_function(t, C, D, T):
+  return C * max(0, math.floor((t - D)/T) + 1)
+
+def max_num_requests(t, ts, D, T):
+  return math.floor((min(ts, t-D)-ts+D-1)/T) + 1
+
+def demand_based_function_CO(t, ts, CHi, D_tight, T):
+  return CHi * max_num_requests(t, ts, D_tight, T)
+
+def demand_based_function_UN(t, ts, CLo, D_tight, T):
+  return min(CLo * max_num_requests(t, ts, D_tight, T), D_tight-1)
+
 def calculate_dbf(t, ts, task_set):
   demand = 0
   for task in task_set:
     CLo, CHi, D_tight, D, T, L = task
     demand += demand_based_function(ts, CLo, D_tight, T)
     if L == gt.Level.HI:
-      demand += demand_based_function(t-ts-1, CHi, D, T)
-    if is_carry_over(ts, t, D, T):
-      demand += demand_based_function_CO(ts, CLo, CHi, T, L)
+      demand += demand_based_function(t-ts, CHi, D, T)
+      demand += demand_based_function_CO(t, ts, CHi, D_tight, T)
+    elif L == gt.Level.LO:
+      demand += demand_based_function_UN(t, ts, CLo, D_tight, T)
   return demand
 
 def schedulability_test(task_set):
