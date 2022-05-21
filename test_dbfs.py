@@ -58,8 +58,8 @@ def test_calculate_dbf_with_15_seed():
 
   assert dbf.calculate_dbf(t, ts, task_set) == 85
 
-def test_schedulability_test_80_seed_returns_true():
-  r.seed(6)
+def test_schedulability_test_15_seed_returns_true():
+  r.seed(15)
 
   assert dbf.schedulability_test(gt.create_task_set())
 
