@@ -28,7 +28,7 @@ def demand_based_function(t, C, D, T):
   return C * max(0, math.floor((t - D)/T) + 1)
 
 def max_num_requests(t, ts, D, T):
-  return math.floor((min(ts, t-D)-ts+D-1)/T) + 1
+  return math.floor((min(ts, t-D)-ts+D-1)/T) + 1 if t-D >= 0 else 0
 
 def demand_based_function_CO(t, ts, CHi, D_tight, T):
   return CHi * max_num_requests(t, ts, D_tight, T)
@@ -36,17 +36,20 @@ def demand_based_function_CO(t, ts, CHi, D_tight, T):
 def demand_based_function_UN(t, ts, CLo, D_tight, T):
   return min(CLo * max_num_requests(t, ts, D_tight, T), D_tight-1)
 
+def total_dbf_HI(t, ts, task_set):
+  return sum([demand_based_function(t-ts, CHi, D, T) if L == gt.Level.HI else 0 for (_, CHi, _, D, T, L) in task_set])
+
+def total_dbf_LO(ts, task_set):
+  return sum([demand_based_function(ts, CLo, D_tight, T) for (CLo, _, D_tight, _, T, _) in task_set])
+
+def total_dbf_CO(t, ts, task_set):
+  return sum([demand_based_function_CO(t, ts, CHi, D_tight, T) if L == gt.Level.HI else 0 for (_, CHi, D_tight, _, T, L) in task_set])
+
+def total_dbf_UN(t, ts, task_set):
+  return sum([demand_based_function_CO(t, ts, CLo, D_tight, T) if L == gt.Level.LO else 0 for (CLo, _, D_tight, _, T, L) in task_set])
+
 def calculate_dbf(t, ts, task_set):
-  demand = 0
-  for task in task_set:
-    CLo, CHi, D_tight, D, T, L = task
-    demand += demand_based_function(ts, CLo, D_tight, T)
-    if L == gt.Level.HI:
-      demand += demand_based_function(t-ts, CHi, D, T)
-      demand += demand_based_function_CO(t, ts, CHi, D_tight, T)
-    elif L == gt.Level.LO:
-      demand += demand_based_function_UN(t, ts, CLo, D_tight, T)
-  return demand
+  return total_dbf_HI(t, ts, task_set) + total_dbf_LO(ts, task_set) + total_dbf_CO(t, ts, task_set) + total_dbf_UN(t, ts, task_set)
 
 def schedulability_test(task_set):
   t_max = calculate_t_max(task_set)
