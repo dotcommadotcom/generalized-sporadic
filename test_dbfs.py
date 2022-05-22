@@ -31,7 +31,7 @@ def test_max_num_requests():
   assert dbf.max_num_requests(75,63,15,4) == 3
 
 def test_dbf_CO():
-  assert dbf.demand_based_function_CO(117, 58, 6, 51, 21) == 18
+  assert dbf.demand_based_function_CO(117, 58, 3, 6, 51, 21) == 18
 
 def test_dbf_UN():
   assert dbf.demand_based_function_UN(117, 58, 1, 86, 75) == 1
