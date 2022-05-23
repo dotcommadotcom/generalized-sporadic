@@ -1,54 +1,105 @@
-import random as r
+import random 
 import math
 from enum import Enum 
-from functools import reduce
 
 class Level(Enum):
     HI = 1
     LO = 2
 
-def generate_T():
-  return r.randrange(5,101)
+class task:
+    def __init__(self, ID, T, WCET_LO, WCET_HI, D, tight_D = -1):
+        """
+        Args:
+                ID:         type: string. The id of the task.
+                T:          type: int. The minimum separation time of the task.
+                WCET_LO:    type: int. The WCET in low-criticality mode.
+                D:          type: int. The deadline of the task.
+                l:          type: Level. The criticality level of the task.
+                tight_D:    type: int. The tightened deadline of the task. If not assigned, the same as D.
+        """
+        self.ID = ID
+        self.T = T
+        self.WCET_LO = WCET_LO
+        self.WCET_HI = WCET_HI
+        self.D = D
+        if tight_D == -1:
+          tight_D = D
+        self.tight_D = tight_D
 
-def generate_C_Lo(T):
-  return math.ceil((T * r.randrange(2, 25))/100)
+class task_generation:
+    def gen_kato_utilizations(self, target_val, min_val, max_val):
+        '''
+            This function is modified from the function gen_kato_utilizations in class simso.generator.task_generator.
+            Inputs: 
+                target_val:         type: float. The target sum of the utilization ratio.
+                min_val:            type: float. The minimum utilization ratio.
+                max_val:            type: float. The maximum utilization ratio.
+            Outputs:
+                A set of utilization ratios whose sum is the target_val.
+        '''
+        vals = []
+        total_val = 0
+        # Classic UUniFast algorithm:
+        while total_val < target_val:
+            val = random.uniform(min_val, max_val)
+            if val + total_val> target_val:
+                val = target_val - total_val
+            total_val += val
+            vals.append(val)
+        return vals
 
-def generate_C_Hi(CLo):
-  return CLo * r.randrange(2, 5)
+    def gen_task(self, utilization, ID):
+        '''
+            Generates the task based on the utilization ratio
+            How do we define the utilization ratio? --> WCET_LO / T based on Easwaran 2013
+            Inputs:
+                utilization:        type: float. The utilization ratio of the task.
+            Output:    
+                A task with all parameters initialized.
+        '''
+        WCET_LO = self.generate_WCET_LO()
+        T = math.ceil(WCET_LO/utilization)
 
-def generate_D(CHi):
-  return r.randrange(CHi, 101)
+        # the operations below randomly generate T and then calculates WCET_LO
+        # this may cause the WCET_LO to be 0
+        #T = self.generate_T()
+        #WCET_LO = math.floor(T * utilization)
 
-def generate_L():
-  return r.choice([Level.HI, Level.LO])
+        l = self.generate_L()
+        if l == Level.LO:
+            WCET_HI = WCET_LO
+        else:
+            WCET_HI = self.generate_WCET_HI(WCET_LO)
+        D = self.generate_D(WCET_HI)
+        return task(ID, T, WCET_LO, WCET_HI, D)
 
-def generate_utilization_bound():
-  return r.choice([0.5, 0.6, 0.7, 0.8, 0.9])
+    def generate_WCET_LO(self):
+        return random.randrange(5, 30)
 
-def is_utilization_valid(Cs, Ts, u_bound):
-  assert len(Cs) == len(Ts), "Input lists must be the same length."
 
-  return calculate_utilization(Cs, Ts) <= u_bound
+    def generate_T(self):
+      return random.randrange(5,101)
 
-def calculate_utilization(Cs, Ts):
-  return sum([Cs[i]/Ts[i] for i in range(0, len(Cs))])
+    def generate_WCET_HI(self, WCET_LO):
+      return WCET_LO * random.randrange(2, 5)
 
-def create_task_set():
-  utilization_bound = generate_utilization_bound()
-  CLos = []
-  CHis = []
-  Ds = []
-  Ts = []
-  Ls = []
-  index = 0
+    def generate_D(self, WCET_HI):
+      #return random.randrange(WCET_HI, 101)
+      # enlarge the random range to fit in large WCET_HI values
+      return random.randrange(WCET_HI, 301)
 
-  while is_utilization_valid(CHis, Ts, utilization_bound):
-    Ts.append(generate_T())
-    Ls.append(generate_L())
-    CLos.append(generate_C_Lo(Ts[index]))
-    CHis.append(CLos[index] if Ls[index] == Level.LO else generate_C_Hi(CLos[index]))
-    Ds.append(generate_D(CHis[index]))
-    index += 1
+    def generate_L(self):
+      return random.choice([Level.HI, Level.LO])
 
-  length_task_set = len(Ts) if is_utilization_valid(CHis, Ts, 1) else len(Ts) - 1
-  return [(CLos[i], CHis[i], Ds[i], Ds[i], Ts[i], Ls[i]) for i in range(length_task_set)]
+    def create_task_set(self, utilization_sum, min_u, max_u):
+        utilization_ratios = self.gen_kato_utilizations(utilization_sum, min_u, max_u)
+        tasks = []
+        counter = 0
+        for u in utilization_ratios:
+            t = self.gen_task(u, str(counter))
+            while t.WCET_LO == 0:
+                t = self.gen_task(u, str(counter))
+            tasks.append(t)
+            counter += 1
+        return tasks
+

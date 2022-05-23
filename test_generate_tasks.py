@@ -1,3 +1,25 @@
+from generate_tasks import task, task_generation
+
+def print_task_set(task_set):
+  for t in task_set:
+    print("ID:{}, WCET_LO:{}, WCET_HI:{}, T:{}, D:{}".format(t.ID, t.WCET_LO, t.WCET_HI, t.T, t.D))
+
+def cal_real_u_sum(task_set):
+  sum = 0
+  for t in task_set:
+    sum += t.WCET_LO/t.T
+  return sum
+
+if __name__ == '__main__':
+  G = task_generation()
+  for u_sum in [0.5, 0.6, 0.7, 0.8, 0.9]:
+    task_set = G.create_task_set(u_sum, 0.02, 0.25)
+    print("------- Current utilization sum: {}---------".format(u_sum))
+    print_task_set(task_set)
+    print("Real utilization sum: {}".format(cal_real_u_sum(task_set)))
+
+'''
+# the unit tests of the prebious generate_tasks.py
 import pytest
 import generate_tasks as gt
 import random as r
@@ -70,3 +92,4 @@ def test_create_task_set_CHi_less_than_min_separation():
   _, CHis, _, Ts, _ = unpack_task_set(gt.create_task_set())
 
   assert [CHi <= T for (CHi, T) in zip(CHis, Ts)]
+'''
