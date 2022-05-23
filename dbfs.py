@@ -52,11 +52,25 @@ def total_dbf_UN(t, ts, task_set):
 def calculate_dbf(t, ts, task_set):
   return total_dbf_HI(t, ts, task_set) + total_dbf_LO(ts, task_set) + total_dbf_CO(t, ts, task_set) + total_dbf_UN(t, ts, task_set)
 
-def schedulability_test(task_set):
+def schedulability_test_thm1(task_set):
   t_max = calculate_t_max(task_set)
   for i in range(2, t_max + 1):
     for j in range(i-1, 0, -1):
       if calculate_dbf(i, j, task_set) > i:
         return False
+  return True
+
+def schedulability_test_thm2(task_set):
+  t_max = calculate_t_max(task_set)
+  for i in range(1, t_max+1):
+    if total_dbf_LO(i, task_set) > i:
+      return False
+  return True
+
+def schedulability_test_thm3(task_set):
+  t_max = calculate_t_max(task_set)
+  for i in range(1, t_max+1):
+    if total_dbf_HI(i, 0, task_set) > i:
+      return False
   return True
 
