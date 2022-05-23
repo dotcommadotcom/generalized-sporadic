@@ -34,7 +34,8 @@ def demand_based_function_CO(t, ts, CLo, CHi, D_tight, T):
   return CHi * max_num_requests(t, ts, D_tight, T)
 
 def demand_based_function_UN(t, ts, CLo, D_tight, T):
-  return min(CLo * max_num_requests(t, ts, D_tight, T), D_tight-1)
+  k = max_num_requests(t, ts, D_tight, T)
+  return min(CLo, D_tight-1-(k-1)*T/2) * k
 
 def total_dbf_HI(t, ts, task_set):
   return sum([demand_based_function(t-ts, CHi, D, T) if L == gt.Level.HI else 0 for (_, CHi, _, D, T, L) in task_set])
