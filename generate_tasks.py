@@ -7,14 +7,14 @@ class Level(Enum):
     LO = 2
 
 class task:
-    def __init__(self, ID, T, WCET_LO, WCET_HI, D, tight_D = -1):
+    def __init__(self, ID, T, WCET_LO, WCET_HI, D, L, tight_D = -1):
         """
         Args:
                 ID:         type: string. The id of the task.
                 T:          type: int. The minimum separation time of the task.
                 WCET_LO:    type: int. The WCET in low-criticality mode.
                 D:          type: int. The deadline of the task.
-                l:          type: Level. The criticality level of the task.
+                L:          type: Level. The criticality level of the task.
                 tight_D:    type: int. The tightened deadline of the task. If not assigned, the same as D.
         """
         self.ID = ID
@@ -22,6 +22,7 @@ class task:
         self.WCET_LO = WCET_LO
         self.WCET_HI = WCET_HI
         self.D = D
+        self.L = L
         if tight_D == -1:
           tight_D = D
         self.tight_D = tight_D
@@ -71,7 +72,7 @@ class task_generation:
         else:
             WCET_HI = self.generate_WCET_HI(WCET_LO)
         D = self.generate_D(WCET_HI)
-        return task(ID, T, WCET_LO, WCET_HI, D)
+        return task(ID, T, WCET_LO, WCET_HI, D, l)
 
     def generate_WCET_LO(self):
         return random.randrange(5, 30)
