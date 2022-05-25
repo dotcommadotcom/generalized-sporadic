@@ -59,7 +59,7 @@ class task_generation:
                 A task with all parameters initialized.
         '''
         WCET_LO = self.generate_WCET_LO()
-        T = math.ceil(WCET_LO/utilization)
+        T = self.generate_T(WCET_LO, utilization)
 
         # the operations below randomly generate T and then calculates WCET_LO
         # this may cause the WCET_LO to be 0
@@ -78,8 +78,8 @@ class task_generation:
         return random.randrange(5, 30)
 
 
-    def generate_T(self):
-      return random.randrange(5,101)
+    def generate_T(self, WCET_LO, u):
+      return math.ceil(WCET_LO/u)
 
     def generate_WCET_HI(self, WCET_LO):
       return WCET_LO * random.randrange(2, 5)
