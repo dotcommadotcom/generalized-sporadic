@@ -11,18 +11,17 @@ def calculate_utilization(Cs, Ts):
   return sum([Cs[i]/Ts[i] for i in range(0, len(Cs))])
 
 def calculate_t_max(task_set):
-  CHis = []
+  CLos = []
   Ds = []
   Ts = []
 
   for task in task_set:
-    #_, CHi, _, D, T, _ = task
-    CHi, D, T = task.WCET_HI, task.D, task.T
-    CHis.append(CHi)
+    CLo, D, T = task.WCET_LO, task.D, task.T
+    CLos.append(CLo)
     Ds.append(D)
     Ts.append(T)
 
-  U = calculate_utilization(CHis, Ts)
+  U = calculate_utilization(CLos, Ts)
   
   t_max = min(lcm(Ts) + max(Ds), U / (1 - U) * max([T - D for (T, D) in zip(Ts, Ds)]))
 
