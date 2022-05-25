@@ -1,8 +1,9 @@
 from generate_tasks import task, task_generation
+import dbfs as dbf
 
 def print_task_set(task_set):
   for t in task_set:
-    print("ID:{}, WCET_LO:{}, WCET_HI:{}, T:{}, D:{}".format(t.ID, t.WCET_LO, t.WCET_HI, t.T, t.D))
+    print("ID:{}, WCET_LO:{}, WCET_HI:{}, T:{}, D:{}, L:{}".format(t.ID, t.WCET_LO, t.WCET_HI, t.T, t.D, t.L))
 
 def cal_real_u_sum(task_set):
   sum = 0
@@ -17,6 +18,7 @@ if __name__ == '__main__':
     print("------- Current utilization sum: {}---------".format(u_sum))
     print_task_set(task_set)
     print("Real utilization sum: {}".format(cal_real_u_sum(task_set)))
+    print("t_max: {}".format(dbf.calculate_t_max(task_set)))
 
 '''
 # the unit tests of the prebious generate_tasks.py
