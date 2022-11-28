@@ -2,7 +2,6 @@
 from functools import reduce
 import math as m
 import generate_tasks as gt
-import random as r
 
 def calculate_utilization(task_set):
   return sum([task.C_LO / task.T for task in task_set])
