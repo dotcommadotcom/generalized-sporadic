@@ -83,19 +83,3 @@ def generate_task(utilization, ID):
 def generate_task_set(utilization_sum, min_u, max_u):
     utilizations = generate_kato_utilizations(utilization_sum, min_u, max_u)
     return [generate_task(u, i) for u, i in zip(utilizations, range(len(utilizations)))]
-
-
-
-
-
-def print_task_set(task_set):
-  for t in task_set:
-    print("ID: {}, C_LO: {}, C_HI: {}, T: {}, D: {}, L: {}".format(t.ID, t.C_LO, t.C_HI, t.T, t.D, t.L))
-
-if __name__ == '__main__':
-  for u_sum in [0.5, 0.6, 0.7, 0.8, 0.9]:
-    task_set = generate_task_set(u_sum, 0.02, 0.25)
-    print("------- Current utilization sum: {}---------".format(u_sum))
-    print_task_set(task_set)
-    print("Real utilization sum: {}".format(sum([task.C_LO / task.T for task in task_set])))
-    print("t_max: {}".format(dbf.calculate_t_max(task_set)))
