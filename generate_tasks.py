@@ -7,8 +7,8 @@ class Level(Enum):
     HI = 1
     LO = 2
 
-class task:
-    def __init__(self, ID, T, C_LO, C_HI, D, L, tight_D = -1):
+class Task:
+    def __init__(self, ID, T, C_LO, C_HI, D, L = Level.LO, tight_D = -1):
         """
         Args:
                 ID:         type: int. ID of task.
@@ -78,7 +78,7 @@ def generate_task(utilization, ID):
     D = generate_D(C_HI)
     T = generate_T(C_LO, utilization)
 
-    return task(ID, T, C_LO, C_HI, D, L)
+    return Task(ID, T, C_LO, C_HI, D, L)
 
 def generate_task_set(utilization_sum, min_u, max_u):
     utilizations = generate_kato_utilizations(utilization_sum, min_u, max_u)
