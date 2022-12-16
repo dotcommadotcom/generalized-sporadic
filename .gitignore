@@ -2,3 +2,4 @@ scratch.py
 venv_gs/*
 .DS_Store
 /sample/*
+/output/*
