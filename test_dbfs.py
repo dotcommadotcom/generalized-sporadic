@@ -152,6 +152,12 @@ def test_upper_is_zero_t_is_D(random_task):
 def test_upper_is_negative_t_less_D(random_task):
   assert dbf.upper(random_task, random_task.D - 1, 1) < 0
 
+def test_upper_HI_less_ts(random_HI_task, t):
+  t = r.randint(0, t * t)
+  ts = r.randint(0, t)
+
+  assert dbf.upper(random_HI_task, t, ts) <= ts
+
 
 def test_dbf_CO_is_56(HI_task, t):
   assert dbf.demand_based_function_CO(HI_task, t, t // 2) == 56
