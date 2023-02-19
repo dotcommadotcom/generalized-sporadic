@@ -19,7 +19,7 @@ def lower(task, ts):
   return task.T * max_requests(task.T, ts, task.tight_D) 
 
 def upper(task, t, ts):
-  return min(ts, t - task.tight_D) if task.L == gt.Level.LO else t - task.D - task.T * max_requests(task.T, t - ts, task.D)
+  return min(ts, t - task.tight_D if task.L == gt.Level.LO else t - task.D - task.T * max_requests(task.T, t - ts, task.D))
 
 def demand_based_function_CO(task, t, ts):
   return demand_based_function(task.C_HI, task.T, upper(task, t, ts), lower(task, ts)) if task.L == gt.Level.HI else 0
