@@ -39,17 +39,13 @@ def demand_based_function_UN(task, t, ts):
 
   return int(min(task.C_LO, ts - lower(task, ts) - (k - 1) * task.T / 2) * k)
 
-def sum_dbf_HI(task_set, t, ts):
-  return sum([demand_based_function_HI(task, t, ts) for task in task_set if task.L == gt.Level.HI])
-
-def sum_dbf_LO(task_set, ts):
-  return sum([demand_based_function_LO(task, ts) for task in task_set])
-
-def sum_dbf_CO(task_set, t, ts):
-  return sum([demand_based_function_CO(task, t, ts) for task in task_set if task.L == gt.Level.HI])
-
-def sum_dbf_UN(task_set, t, ts):
-  return sum([demand_based_function_UN(task, t, ts) for task in task_set if task.L == gt.Level.LO])
-
 def sum_dbf(task_set, t, ts):
-  return sum_dbf_HI(task_set, t, ts) + sum_dbf_LO(task_set, ts) + sum_dbf_CO(task_set, t, ts) + sum_dbf_UN(task_set, t, ts)
+  demand_sum = 0
+  for task in task_set:
+    if task.L == gt.Level.HI:
+      demand_sum += demand_based_function_HI(task, t, ts) + demand_based_function_CO(task, t, ts)
+    else:
+      demand_sum += demand_based_function_UN(task, t, ts)
+    demand_sum += demand_based_function_LO(task, ts) 
+
+  return demand_sum

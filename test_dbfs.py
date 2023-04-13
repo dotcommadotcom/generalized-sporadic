@@ -181,18 +181,5 @@ def test_dbf_UN_is_zero_upper_is_zero_lower_is_positive(random_LO_task):
 def test_dbf_UN_is_zero_HI_task(random_HI_task, t):
   assert dbf.demand_based_function_CO(random_HI_task, t, 1) == 0
 
-
-def test_sum_dbf_LO_is_240(task_set, t):
-  assert dbf.sum_dbf_LO(task_set, t // 2) == 240
-
-def test_sum_dbf_HI_is_100(task_set, t):
-  assert dbf.sum_dbf_HI(task_set, t, t // 2) == 100
-
-def test_sum_dbf_CO_is_72(task_set, t):
-  assert dbf.sum_dbf_CO(task_set, t, t // 2) == 72
-
-def test_sum_dbf_UN_is_100(task_set, t):
-  assert dbf.sum_dbf_UN(task_set, t, t // 2) == 100
-
 def test_sum_dbf_is_612(task_set, t):
   assert dbf.sum_dbf(task_set, t, t // 2) == 512
