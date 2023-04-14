@@ -216,20 +216,26 @@ def test_dbf_CO_is_zero_t_less_D(random_HI_task):
 
   assert dbf.demand_based_function_CO(random_HI_task, t, ts) == 0
 
+def test_dbf_CO_is_zero_ts_less_condition(random_HI_task):
+  ''' t > D and ts <= t - D - floor((t-D)/T) * T --> upper < 0 --> dbf_CO == 0 '''
+
+  t = random_HI_task.D + 100
+  ts = t - random_HI_task.D - m.floor((t - random_HI_task.D)/random_HI_task.T) * random_HI_task.T
+
+  assert dbf.demand_based_function_CO(random_HI_task, t, ts) == 0
+
+def test_dbf_CO_is_zero_t_is_D_ts_is_Ds(random_HI_task):
+  ''' t == D and ts >= tight_D --> upper == 0 and lower > 0 --> dbf_CO == 0 '''
+
+  t = random_HI_task.D
+  ts = random_HI_task.D 
+
+  assert dbf.demand_based_function_CO(random_HI_task, t, ts) == 0
+
 def test_dbf_CO_is_C_HI_upper_lower_is_zero(random_HI_task):
   ''' upper == 0 and lower == 0 --> dbf_CO == C_HI '''
 
   assert dbf.demand_based_function_CO(random_HI_task, random_HI_task.D, random_HI_task.tight_D - 1) == random_HI_task.C_HI
-
-def test_dbf_CO_is_zero_upper_is_negative(random_HI_task):
-  ''' upper < 0 --> dbf_CO == 0 '''
-
-  assert dbf.demand_based_function_CO(random_HI_task, random_HI_task.D - 1, 1) == 0
-
-def test_dbf_CO_is_zero_upper_is_zero_lower_is_positive(random_HI_task):
-  ''' upper == 0 and lower > 0 --> dbf_CO == 0 '''
-
-  assert dbf.demand_based_function_CO(random_HI_task, random_HI_task.D, random_HI_task.tight_D) == 0
 
 
 
