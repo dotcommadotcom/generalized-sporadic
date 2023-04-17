@@ -1,22 +1,10 @@
 
-from functools import reduce, lru_cache
-import math as m
+from functools import lru_cache
 import generate_tasks as gt
 
 @lru_cache(maxsize=None)
 def max_requests(T, upper, lower):
-  return max(0, m.floor((upper - lower)/T) + 1)
-
-@lru_cache(maxsize=None)
-def demand_based_function(C, T, upper, lower):
-  return  C * max_requests(T, upper, lower)
-
-@lru_cache(maxsize=None)
-def demand_based_function_LO(task, ts):
-  return demand_based_function(task.C_LO, task.T, ts, task.tight_D)
-
-def demand_based_function_HI(task, t, ts):
-  return demand_based_function(task.C_HI, task.T, t - ts, task.D)
+  return max(0, (upper - lower)//T + 1)
 
 @lru_cache(maxsize=None)
 def lower(task, ts):
@@ -29,6 +17,17 @@ def upper_CO(task, t, ts):
 @lru_cache(maxsize=None)
 def upper_UN(task, t, ts):
   return min(ts, t - task.tight_D)
+
+@lru_cache(maxsize=None)
+def demand_based_function(C, T, upper, lower):
+  return  C * max_requests(T, upper, lower)
+
+@lru_cache(maxsize=None)
+def demand_based_function_LO(task, ts):
+  return demand_based_function(task.C_LO, task.T, upper = ts, lower = task.tight_D)
+
+def demand_based_function_HI(task, t, ts):
+  return demand_based_function(task.C_HI, task.T, upper = t - task.D, lower = ts)
 
 @lru_cache(maxsize=None)
 def demand_based_function_CO(task, t, ts):

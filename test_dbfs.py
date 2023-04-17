@@ -116,6 +116,48 @@ def test_max_requests_at_nT_and_n1T_minus_one_same(t):
   assert dbf.max_requests(T, upper, lower1) == dbf.max_requests(T, upper, lower2)
 
 
+''' TEST LOWER FUNCTION '''
+
+def test_lower_is_736(HI_task, t):
+  assert dbf.lower(HI_task, t) == 736
+
+def test_lower_is_positive_ts_is_D(random_task):
+  ''' ts >= D --> lower > 0 '''
+
+  assert dbf.lower(random_task, random_task.tight_D) > 0
+
+def test_lower_is_zero_ts_less_D(random_task):
+  ''' ts < D --> lower == 0 '''
+
+  assert dbf.lower(random_task, random_task.tight_D - 1) == 0
+
+
+
+''' TEST UPPER_CO FUNCTION '''
+
+def test_upper_CO_is_439(HI_task, t):
+  assert dbf.upper_CO(HI_task, t, t // 2) == 439
+ 
+def test_upper_CO_less_ts(random_HI_task, t):
+  ''' ∀ 0 < ts < t, upper_co < ts '''
+
+  t = r.randint(0, t * t)
+
+  assert all([dbf.upper_CO(random_HI_task, t, ts) < ts for ts in range(1, t)])
+
+
+
+''' TEST UPPER_UN FUNCTION '''
+
+def test_upper_UN_is_500(LO_task, t):
+  assert dbf.upper_UN(LO_task, t, t // 2) == 500
+
+def test_upper_UN_is_positive_t_greater_D(random_LO_task):
+  ''' t > D --> upper_un > 0 '''
+
+  assert dbf.upper_UN(random_LO_task, random_LO_task.tight_D + 1, 1) > 0
+
+
 
 ''' TEST DBF FUNCTION '''
 
@@ -160,48 +202,6 @@ def test_dbf_HI_is_zero_t_ts_less_D(random_HI_task, t):
 
 
 
-''' TEST LOWER FUNCTION '''
-
-def test_lower_is_736(HI_task, t):
-  assert dbf.lower(HI_task, t) == 736
-
-def test_lower_is_positive_ts_is_D(random_task):
-  ''' ts >= D --> lower > 0 '''
-
-  assert dbf.lower(random_task, random_task.tight_D) > 0
-
-def test_lower_is_zero_ts_less_D(random_task):
-  ''' ts < D --> lower == 0 '''
-
-  assert dbf.lower(random_task, random_task.tight_D - 1) == 0
-
-
-
-''' TEST UPPER_CO FUNCTION '''
-
-def test_upper_CO_is_439(HI_task, t):
-  assert dbf.upper_CO(HI_task, t, t // 2) == 439
- 
-def test_upper_CO_less_ts(random_HI_task, t):
-  ''' ∀ 0 < ts < t, upper_co < ts '''
-
-  t = r.randint(0, t * t)
-
-  assert all([dbf.upper_CO(random_HI_task, t, ts) < ts for ts in range(1, t)])
-
-
-
-''' TEST UPPER_UN FUNCTION '''
-
-def test_upper_UN_is_500(LO_task, t):
-  assert dbf.upper_UN(LO_task, t, t // 2) == 500
-
-def test_upper_UN_is_positive_t_greater_D(random_LO_task):
-  ''' t > D --> upper_un > 0 '''
-
-  assert dbf.upper_UN(random_LO_task, random_LO_task.tight_D + 1, 1) > 0
-
-
 
 ''' TEST DBF_CO FUNCTION '''
 
@@ -228,15 +228,28 @@ def test_dbf_CO_is_zero_t_is_D_ts_is_Ds(random_HI_task):
   ''' t == D and ts >= tight_D --> upper == 0 and lower > 0 --> dbf_CO == 0 '''
 
   t = random_HI_task.D
-  ts = random_HI_task.D 
+  random_HI_task.tight_D = random_HI_task.D // 2
+  ts = random_HI_task.tight_D
 
   assert dbf.demand_based_function_CO(random_HI_task, t, ts) == 0
 
 def test_dbf_CO_is_C_HI_upper_lower_is_zero(random_HI_task):
-  ''' upper == 0 and lower == 0 --> dbf_CO == C_HI '''
+  ''' t == D and ts < tight_D --> upper == 0 and lower == 0 --> dbf_CO == C_HI '''
 
-  assert dbf.demand_based_function_CO(random_HI_task, random_HI_task.D, random_HI_task.tight_D - 1) == random_HI_task.C_HI
+  t = random_HI_task.D
+  random_HI_task.tight_D = random_HI_task.D // 2
+  ts = random_HI_task.tight_D - 1
 
+  assert dbf.demand_based_function_CO(random_HI_task, t, ts) == random_HI_task.C_HI
+
+def test_dbf_CO_is_zero_upper_is_t_D_lower_is_zero(random_HI_task):
+  ''' t > D and t - D < ts < tight_D --> upper == t - D and lower == 0 --> dbf_CO > 0 '''
+
+  t = random_HI_task.D + 1
+  random_HI_task.tight_D = random_HI_task.D - 1
+  ts = r.randint(t - random_HI_task.D + 1, random_HI_task.tight_D - 1)
+
+  assert dbf.demand_based_function_CO(random_HI_task, t, ts) > 0
 
 
 
