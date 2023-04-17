@@ -3,5 +3,5 @@ venv_gs/*
 .DS_Store
 /sample/*
 /output/*
-/tasks/*
+*.csv
 *.txt
