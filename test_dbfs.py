@@ -1,8 +1,8 @@
 import pytest
+import random as r
+
 import dbfs as dbf
 import generate_tasks as gt
-import random as r
-from schedulability import *
 
 @pytest.fixture
 def upper(): return 100
