@@ -172,6 +172,9 @@ class Task_Set:
       async_result.wait()
       self.set_thm3(async_result.get())
 
+  def to_tensor(self, ts = None):
+    return tr.stack([task.to_tensor() for task in self.task_set]) if not ts else tr.stack([task.to_tensor() for task in ts])
+
 def generate_valid_task_set(target_u):
   while True:
     task_set = Task_Set(target_u)
