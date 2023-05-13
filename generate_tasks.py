@@ -2,7 +2,7 @@ import random as r
 from math import gcd, ceil
 from functools import reduce
 from enum import Enum 
-# import multiprocessing as mp
+import torch as tr
 import torch.multiprocessing as tmp
 
 import schedulability as s
@@ -47,6 +47,9 @@ class Task:
 
   def __repr__(self):
     return "Task({}, {}, {}, {}, {}, {}".format(self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D)
+
+  def to_tensor(self):
+    return tr.tensor([self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D])
 
 def generate_L():
   return r.choice([Level.HI, Level.LO])
