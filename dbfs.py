@@ -1,8 +1,5 @@
 import torch as tr
 
-import generate_tasks as gt
-import schedulability as s
-
 @tr.jit.script
 def max_requests(T, upper, lower):
   return tr.max(tr.floor_divide(upper - lower, T) + 1, tr.tensor(0))
