@@ -38,7 +38,6 @@ def write_df(batch_size, total_count, filename, header, num_procs = 1, target_u_
     for _ in range(total_count//batch_size):
       task_sets = [gt.generate_valid_task_set(u_sum) for _ in range(batch_size)]
       start_time = time.time()
-
       for ts in task_sets:
         ts.sched_test_thm1(num_procs)
         ts.sched_test_thm2(num_procs)
@@ -54,55 +53,57 @@ def write_df(batch_size, total_count, filename, header, num_procs = 1, target_u_
 def parse_tasks(task_set_str):
   task_list = []
   for task_str in task_set_str.strip('[]').split('), '):
-    task_attrs = [int(attr_str) for attr_str in task_str.strip('Task()').split(',')]
-    task = gt.Task(*task_attrs)
-    task_list.append(task)
+    if len(task_str.strip('Task()').split(',')) > 1:
+      task_attrs = [int(attr_str) for attr_str in task_str.strip('Task()').split(',')]
+      task = gt.Task(*task_attrs)
+      task_list.append(task)
   return task_list
+
+def parse_bool(bool_string):
+  return True if bool_string == 'True' else False
 
 def parse_row(row):
   return {
           'num_tasks':      int(row["num_tasks"]),
           't_max':          int(row["t_max"]),
           'utilization':    float(row["utilization"]),
-          'thm1':           bool(row["thm1"]),
-          'thm2':           bool(row["thm2"]),
-          'thm3':           bool(row["thm3"]),
+          'thm1':           parse_bool(row["thm1"]),
+          'thm2':           parse_bool(row["thm2"]),
+          'thm3':           parse_bool(row["thm3"]),
           'lo_tasks_list':  parse_tasks(row["lo_tasks_list"]),
           'hi_tasks_list':  parse_tasks(row["hi_tasks_list"])
           } 
 
-def read_task_sets(filename, header):
+def read_task_sets(filename, limit = None):
   task_sets_db = []
-  task_sets_df = pd.DataFrame(columns=header)
+  task_sets_dict_list = []
   with open(filename + '.csv', 'r') as csvfile:
     reader = csv.DictReader(csvfile)
 
     for row in reader:
       task_set_dict = parse_row(row)
-
       task_sets_db.append(gt.Task_Set(ts_dict=task_set_dict))
-      task_sets_df = task_sets_df.append(task_set_dict, ignore_index=True)
+      task_sets_dict_list.append(task_set_dict) 
+      if limit and len(task_sets_db) >= limit:
+        break
   
-  print("--------------------DB LENGTH {}---------------------".format(len(task_sets_db)))
-  for tsdb in task_sets_db:
-    print(tsdb)
-
-  return task_sets_db, task_sets_df
+  return task_sets_db, pd.DataFrame(task_sets_dict_list)
 
 PROCESS_N = mp.cpu_count()
-COUNT_PER_USUM = 10000
+COUNT_PER_USUM = 10
 HEADER = ['num_tasks', 't_max', 'utilization', 'thm1', 'thm2', 'thm3', 'lo_tasks_list', 'hi_tasks_list']
 UTARGETS = [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.975]
-FILENAME = 'database_{}'.format(COUNT_PER_USUM * len(UTARGETS))
+USUM = 0.8
+FILENAME = 'database_{}_{}'.format(USUM, COUNT_PER_USUM * len(UTARGETS))
 
 if __name__ == "__main__":
   print("running..........")
-  write_df(batch_size = 1, 
+  write_df(batch_size = 5, 
            total_count =   COUNT_PER_USUM, 
            filename =      FILENAME,
            header =        HEADER, 
            num_procs =     PROCESS_N, 
-           target_u_sums = UTARGETS,
+           target_u_sums = [USUM],
            header_exists = False)
 
   # task_sets_db, task_sets_df = read_task_sets(FILENAME, HEADER)
