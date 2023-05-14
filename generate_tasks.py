@@ -42,10 +42,10 @@ class Task:
     self.L = L if L else (Level.LO if C_LO == C_HI else Level.HI)
   
   def __str__(self):
-    return "ID: {}, T: {}, C_LO: {}, C_HI: {}, D: {}, D': {}, L: {})".format(self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D, self.L)
+    return "ID: {}, T: {}, C_LO: {}, C_HI: {}, D: {}, D': {}, L: {}".format(self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D, self.L)
 
   def __repr__(self):
-    return "Task({}, {}, {}, {}, {}, {}".format(self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D)
+    return "Task({}, {}, {}, {}, {}, {})".format(self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D)
   
 def generate_L():
   return r.choice([Level.HI, Level.LO])
