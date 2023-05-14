@@ -1,6 +1,6 @@
 from functools import lru_cache
+
 import generate_tasks as gt
-import schedulability as s
 
 CACHE_SIZE = 10000
 
