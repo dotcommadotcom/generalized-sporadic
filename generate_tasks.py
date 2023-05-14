@@ -95,10 +95,10 @@ class Task_Set:
       self.task_set = self.lo_tasks_list + self.hi_tasks_list
 
   def __str__(self):
-    task_set_string = "Task set with {} tasks and t_max value of {}\n".format(self.num_tasks, self.t_max)
-    if self.thm1: task_set_string += "Thm 1 -- {}\n".format(self.thm1)
-    if self.thm2: task_set_string += "Thm 2 -- {}\n".format(self.thm2)
-    if self.thm3: task_set_string += "Thm 3 -- {}\n".format(self.thm3)
+    task_set_string = "Task set: {} tasks, t_max = {}, utilization = {} \n".format(self.num_tasks, self.t_max, self.utilization)
+    if self.thm1 is not None: task_set_string += "Thm 1 -- {}\n".format(self.thm1)
+    if self.thm2 is not None: task_set_string += "Thm 2 -- {}\n".format(self.thm2)
+    if self.thm3 is not None: task_set_string += "Thm 3 -- {}\n".format(self.thm3)
     for task in self.task_set:
       task_set_string += str(task) + "\n"
     return task_set_string
