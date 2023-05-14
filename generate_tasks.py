@@ -1,7 +1,7 @@
-import random as r
+from enum import Enum 
 from math import gcd, ceil, floor
 from functools import reduce
-from enum import Enum 
+import random as r
 import multiprocessing as mp
 
 import schedulability as s
@@ -42,7 +42,7 @@ class Task:
     self.L = L if L else (Level.LO if C_LO == C_HI else Level.HI)
   
   def __str__(self):
-    return "ID: {}, T: {}, C_LO: {}, C_HI: {}, D: {}, D': {}, L: {}".format(self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D, self.L)
+    return "ID: {}, T: {}, C_LO: {}, C_HI: {}, D: {}, D': {}, L: {})".format(self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D, self.L)
 
   def __repr__(self):
     return "Task({}, {}, {}, {}, {}, {}".format(self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D)
@@ -144,7 +144,7 @@ class Task_Set:
   def sched_test_thm1(self, num_procs = 1):
     with mp.Pool(processes = num_procs) as pool:
       async_result = pool.apply_async(
-        s.schedulability_test_thm1, (self, self.t_max)
+        s.schedulability_test_thm1, (self, )
       )
       async_result.wait()
       self.set_thm1(async_result.get())
@@ -152,7 +152,7 @@ class Task_Set:
   def sched_test_thm2(self, num_procs = 1):
     with mp.Pool(processes=num_procs) as pool:
       async_result = pool.apply_async(
-        s.schedulability_test_thm2, (self, self.t_max)
+        s.schedulability_test_thm2, (self, )
       )
       async_result.wait()
       self.set_thm2(async_result.get())
@@ -160,7 +160,7 @@ class Task_Set:
   def sched_test_thm3(self, num_procs = 1):
     with mp.Pool(processes=num_procs) as pool:
       async_result = pool.apply_async(
-        s.schedulability_test_thm3, (self, self.t_max)
+        s.schedulability_test_thm3, (self, )
       )
       async_result.wait()
       self.set_thm3(async_result.get())
