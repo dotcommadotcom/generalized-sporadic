@@ -76,13 +76,3 @@ def sum_dbf(task_set, t, ts):
     demand_sum += demand_based_function_LO(task, ts) 
 
   return demand_sum
-
-
-if __name__ == "__main__":
-  task_set = gt.Task_Set(0.8)
-  t, ts = 1000, 500
-  print(sum_dbf_LO(task_set, ts))
-  print(sum_dbf_HI(task_set, t, ts))
-  print(sum_dbf_CO(task_set, t, ts))
-  print(sum_dbf_UN(task_set, t, ts))
-  print(sum_dbf(task_set, t, ts))
