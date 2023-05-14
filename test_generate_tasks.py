@@ -20,8 +20,8 @@ def utilization(min_u, max_u):
   return r.uniform(min_u, max_u)
 
 @pytest.fixture
-def target_u():
-  return 0.7
+def random_target_u():
+  return r.choice([0.5, 0.6, 0.7, 0.8, 0.9])
 
 @pytest.fixture
 def get_seed():
@@ -32,19 +32,19 @@ def random_task(utilization):
   return gt.generate_task(utilization)
 
 @pytest.fixture
-def random_task_set(target_u):
-  return gt.Task_Set(target_u)
+def random_task_set(random_target_u):
+  return gt.Task_Set(random_target_u)
 
 @pytest.fixture
-def task_set(get_seed, target_u):
+def task_set(get_seed, random_target_u):
   r.seed(get_seed)
 
-  return gt.Task_Set(target_u)
+  return gt.Task_Set(random_target_u)
 
 @pytest.fixture
-def unconstrained_task_set(target_u):
+def unconstrained_task_set(random_target_u):
   while True:
-    unconstrained_task_set = gt.Task_Set(target_u)
+    unconstrained_task_set = gt.Task_Set(random_target_u)
     if all([task.D > task.T for task in unconstrained_task_set.task_set]):
       break
 
@@ -125,26 +125,26 @@ def test_task_max_C_HI_equal_min_T(random_task, max_u):
 
 ''' TEST TASK SET METHODS '''
 
-def test_utilizations_greater_than_0_exclusive(random_task_set, target_u):
-  assert min(random_task_set.generate_kato_utilizations(target_u)) > 0
+def test_utilizations_greater_than_0_exclusive(random_task_set, random_target_u):
+  assert min(random_task_set.generate_kato_utilizations(random_target_u)) > 0
 
-def test_utilizations_less_than_maxu_inclusive(random_task_set, target_u, max_u):
-  assert max(random_task_set.generate_kato_utilizations(target_u)) < max_u + 0.00001
+def test_utilizations_less_than_maxu_inclusive(random_task_set, random_target_u, max_u):
+  assert max(random_task_set.generate_kato_utilizations(random_target_u)) < max_u + 0.00001
 
-def test_utilizations_sum_equal_target_sum(random_task_set, target_u):
-  assert sum(random_task_set.generate_kato_utilizations(target_u)) == pytest.approx(target_u)
+def test_utilizations_sum_equal_target_sum(random_task_set, random_target_u):
+  assert sum(random_task_set.generate_kato_utilizations(random_target_u)) == pytest.approx(random_target_u)
 
-def test_task_set_utilization_approximately_target_u(random_task_set, target_u):
-  assert target_u - random_task_set.utilization < 0.05
+def test_task_set_utilization_approximately_target_u(random_task_set, random_target_u):
+  assert random_target_u - random_task_set.utilization < 0.05
 
-def test_lcmT_maxD_returns_134523906(task_set):
-  assert task_set.lcmT_maxD() == 134523906
+def test_lcmT_maxD_returns_80901511(task_set):
+  assert task_set.lcmT_maxD() == 80901511
 
-def test_U_maxTD_returns_114(task_set):
-  assert task_set.U_maxTD() == 114
+def test_U_maxTD_returns_680(task_set):
+  assert task_set.U_maxTD() == 680
   
-def test_t_max_returns_114(task_set):
-  assert task_set.calculate_t_max() == 114
+def test_t_max_returns_680(task_set):
+  assert task_set.calculate_t_max() == 680
 
 def test_t_max_is_positive(random_task_set):
   assert random_task_set.calculate_t_max() >= 0
@@ -164,8 +164,8 @@ def test_task_set_hi_is_hi(random_task_set):
 
 ''' TEST VALID TASK SETS GENERATOR '''
 
-def test_valid_task_sets_t_max_greater_0(target_u):
-  task_set = gt.generate_valid_task_set(target_u)
+def test_valid_task_sets_t_max_greater_0():
+  task_set = gt.generate_valid_task_set(0.5)
 
   assert task_set.t_max > 0
 

@@ -1,9 +1,8 @@
 import random as r
-from math import gcd, ceil
+from math import gcd, ceil, floor
 from functools import reduce
 from enum import Enum 
-import torch as tr
-import torch.multiprocessing as tmp
+import multiprocessing as mp
 
 import schedulability as s
 
@@ -16,7 +15,7 @@ MAX_CLO = 25
 MIN_CHI = 2
 MAX_CHI = 4
 
-MAX_D = 500
+MAX_D = 400
 
 class Level(Enum):
   HI = 1
@@ -47,10 +46,7 @@ class Task:
 
   def __repr__(self):
     return "Task({}, {}, {}, {}, {}, {}".format(self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D)
-
-  def to_tensor(self):
-    return tr.tensor([self.ID, self.T, self.C_LO, self.C_HI, self.D, self.tight_D])
-
+  
 def generate_L():
   return r.choice([Level.HI, Level.LO])
 
@@ -131,7 +127,7 @@ class Task_Set:
     return reduce(lambda x, y: (x * y)//gcd(x, y), [task.T for task in self.task_set]) + max([task.D for task in self.task_set])
 
   def U_maxTD(self):
-    return int((self.utilization // (1 - self.utilization) * max([task.T - task.D for task in self.task_set])))
+    return floor(self.utilization / (1 - self.utilization) * max([task.T - task.D for task in self.task_set]))
 
   def calculate_t_max(self):
     return min(self.lcmT_maxD(), self.U_maxTD()) if self.U_maxTD() >= 0 else 0
@@ -146,34 +142,28 @@ class Task_Set:
     self.thm3 = test_result
 
   def sched_test_thm1(self, num_procs = 1):
-    ctx = tmp.get_context('spawn')
-    with ctx.Pool(processes=num_procs) as pool:
+    with mp.Pool(processes = num_procs) as pool:
       async_result = pool.apply_async(
-        s.schedulability_test_thm1, (self.task_set, self.t_max)
+        s.schedulability_test_thm1, (self, self.t_max)
       )
       async_result.wait()
       self.set_thm1(async_result.get())
 
   def sched_test_thm2(self, num_procs = 1):
-    ctx = tmp.get_context('spawn')
-    with ctx.Pool(processes=num_procs) as pool:
+    with mp.Pool(processes=num_procs) as pool:
       async_result = pool.apply_async(
-        s.schedulability_test_thm2, (self.task_set, self.t_max)
+        s.schedulability_test_thm2, (self, self.t_max)
       )
       async_result.wait()
       self.set_thm2(async_result.get())
 
   def sched_test_thm3(self, num_procs = 1):
-    ctx = tmp.get_context('spawn')
-    with ctx.Pool(processes=num_procs) as pool:
+    with mp.Pool(processes=num_procs) as pool:
       async_result = pool.apply_async(
-        s.schedulability_test_thm3, (self.task_set, self.t_max)
+        s.schedulability_test_thm3, (self, self.t_max)
       )
       async_result.wait()
       self.set_thm3(async_result.get())
-
-  def to_tensor(self, ts = None):
-    return tr.stack([task.to_tensor() for task in self.task_set]) if not ts else tr.stack([task.to_tensor() for task in ts])
 
 def generate_valid_task_set(target_u):
   while True:
