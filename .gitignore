@@ -5,3 +5,6 @@ venv_gs/*
 /archive/*
 simulation_settings.py
 ipad.code-workspace
+helper.py
+.gitignore
+main.py
