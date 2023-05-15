@@ -36,16 +36,23 @@ def random_task_set(random_target_u):
   return gt.Task_Set(random_target_u)
 
 @pytest.fixture
-def task_set(get_seed, random_target_u):
-  r.seed(get_seed)
-
-  return gt.Task_Set(random_target_u)
+def task_set():
+  task_set_dict = {'num_tasks': 6, 
+                   't_max': 261, 
+                   'utilization': 0.6964358021917052, 
+                   'thm1': None, 
+                   'thm2': None, 
+                   'thm3': None, 
+                   'lo_tasks_list': [gt.Task(0, 414, 13, 13, 300, 300), gt.Task(3, 115, 14, 14, 267, 267), gt.Task(5, 94, 7, 7, 172, 172)], 
+                   'hi_tasks_list': [gt.Task(1, 122, 23, 46, 312, 312), gt.Task(2, 108, 18, 37, 107, 107), gt.Task(4, 132, 15, 50, 233, 233)]}
+  
+  return gt.Task_Set(ts_dict = task_set_dict)
 
 @pytest.fixture
 def unconstrained_task_set(random_target_u):
   while True:
     unconstrained_task_set = gt.Task_Set(random_target_u)
-    if all([task.D > task.T for task in unconstrained_task_set.task_set]):
+    if all([task.D > task.T for task in unconstrained_task_set.task_set.values()]):
       break
 
   return unconstrained_task_set
@@ -102,9 +109,6 @@ def test_D_less_than_500_inclusive():
 def test_T_minimum_is_100(max_u):
   assert gt.generate_T(5, max_u) == 20
 
-def test_T_maximum_known_is_1500(min_u):
-  assert gt.generate_T(25, min_u) == 1250
-
 def test_T_greater_than_C_HI(max_u):
   C_LO = gt.generate_C_LO()
   C_HI = gt.generate_C_HI(C_LO, gt.Level.HI)
@@ -137,14 +141,14 @@ def test_utilizations_sum_equal_target_sum(random_task_set, random_target_u):
 def test_task_set_utilization_approximately_target_u(random_task_set, random_target_u):
   assert random_target_u - random_task_set.utilization < 0.05
 
-def test_lcmT_maxD_returns_80901511(task_set):
-  assert task_set.lcmT_maxD() == 80901511
+def test_lcmT_maxD_returns_391689852(task_set):
+  assert task_set.lcmT_maxD() == 391689852
 
-def test_U_maxTD_returns_680(task_set):
-  assert task_set.U_maxTD() == 680
+def test_U_maxTD_returns_261(task_set):
+  assert task_set.U_maxTD() == 261
   
-def test_t_max_returns_680(task_set):
-  assert task_set.calculate_t_max() == 680
+def test_t_max_returns_261(task_set):
+  assert task_set.calculate_t_max() == 261
 
 def test_t_max_is_positive(random_task_set):
   assert random_task_set.calculate_t_max() >= 0

@@ -5,6 +5,7 @@ import random as r
 import multiprocessing as mp
 
 import schedulability as s
+import dbfs as dbf
 
 MIN_U = 0.02
 MAX_U = 0.25
@@ -81,8 +82,8 @@ class Task_Set:
       self.thm1 = None
       self.thm2 = None
       self.thm3 = None
-      self.lo_tasks_list = [task for task in self.task_set if task.L == Level.LO]
-      self.hi_tasks_list = [task for task in self.task_set if task.L == Level.HI]
+      self.lo_tasks_list = [task for task in self.task_set.values() if task.L == Level.LO]
+      self.hi_tasks_list = [task for task in self.task_set.values() if task.L == Level.HI]
     else:
       self.num_tasks = ts_dict["num_tasks"]
       self.t_max = ts_dict["t_max"]
@@ -92,14 +93,14 @@ class Task_Set:
       self.thm3 = ts_dict["thm3"]
       self.lo_tasks_list = ts_dict["lo_tasks_list"]
       self.hi_tasks_list = ts_dict["hi_tasks_list"]
-      self.task_set = self.lo_tasks_list + self.hi_tasks_list
+      self.task_set = {task.ID : task for task in self.lo_tasks_list + self.hi_tasks_list}
 
   def __str__(self):
     task_set_string = "Task set: {} tasks, t_max = {}, utilization = {} \n".format(self.num_tasks, self.t_max, self.utilization)
     if self.thm1 is not None: task_set_string += "Thm 1 -- {}\n".format(self.thm1)
     if self.thm2 is not None: task_set_string += "Thm 2 -- {}\n".format(self.thm2)
     if self.thm3 is not None: task_set_string += "Thm 3 -- {}\n".format(self.thm3)
-    for task in self.task_set:
+    for task in self.task_set.values():
       task_set_string += str(task) + "\n"
     return task_set_string
   
@@ -118,16 +119,16 @@ class Task_Set:
 
   def initialize_task_set(self, target_u):
     utilizations = self.generate_kato_utilizations(target_u)
-    return [generate_task(u, i) for u, i in zip(utilizations, range(len(utilizations)))]
+    return {i: generate_task(u, i) for u, i in zip(utilizations, range(len(utilizations)))}
   
   def calculate_utilization(self):
-    return sum([task.C_LO / task.T for task in self.task_set])
+    return sum([task.C_LO / task.T for task in self.task_set.values()])
   
   def lcmT_maxD(self):
-    return reduce(lambda x, y: (x * y)//gcd(x, y), [task.T for task in self.task_set]) + max([task.D for task in self.task_set])
+    return reduce(lambda x, y: (x * y)//gcd(x, y), [task.T for task in self.task_set.values()]) + max([task.D for task in self.task_set.values()])
 
   def U_maxTD(self):
-    return floor(self.utilization / (1 - self.utilization) * max([task.T - task.D for task in self.task_set]))
+    return floor(self.utilization / (1 - self.utilization) * max([task.T - task.D for task in self.task_set.values()]))
 
   def calculate_t_max(self):
     return min(self.lcmT_maxD(), self.U_maxTD()) if self.U_maxTD() >= 0 else 0
@@ -140,30 +141,6 @@ class Task_Set:
 
   def set_thm3(self, test_result):
     self.thm3 = test_result
-
-  def sched_test_thm1(self, num_procs = 1):
-    with mp.Pool(processes = num_procs) as pool:
-      async_result = pool.apply_async(
-        s.schedulability_test_thm1, (self, )
-      )
-      async_result.wait()
-      self.set_thm1(async_result.get())
-
-  def sched_test_thm2(self, num_procs = 1):
-    with mp.Pool(processes=num_procs) as pool:
-      async_result = pool.apply_async(
-        s.schedulability_test_thm2, (self, )
-      )
-      async_result.wait()
-      self.set_thm2(async_result.get())
-
-  def sched_test_thm3(self, num_procs = 1):
-    with mp.Pool(processes=num_procs) as pool:
-      async_result = pool.apply_async(
-        s.schedulability_test_thm3, (self, )
-      )
-      async_result.wait()
-      self.set_thm3(async_result.get())
 
 def generate_valid_task_set(target_u):
   while True:
