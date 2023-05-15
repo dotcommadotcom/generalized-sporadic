@@ -11,7 +11,7 @@ def random_target_u(): return r.choice([0.5, 0.6, 0.7, 0.8, 0.9])
 def unconstrained_task_set(random_target_u):
   while True:
     unconstrained_task_set = gt.Task_Set(random_target_u)
-    if all([task.D > task.T for task in unconstrained_task_set.task_set]):
+    if all([task.D > task.T for task in unconstrained_task_set.task_set.values()]):
       break
 
   return unconstrained_task_set
@@ -37,12 +37,6 @@ def test_sched_thm1_unconstrained_task_set_is_false(unconstrained_task_set):
 def test_sched_thm1_task_set_is_true(task_set):
   assert s.schedulability_test_thm1(task_set) is True
 
-def test_sched_thm1_task_set_thm1(task_set):
-  task_set.sched_test_thm1()
-
-  assert task_set.thm1 is True
-
-
 ''' TEST THEOREM 2 '''
 
 def test_sched_thm2_unconstrained_task_set_is_false(unconstrained_task_set):
@@ -51,11 +45,6 @@ def test_sched_thm2_unconstrained_task_set_is_false(unconstrained_task_set):
 def test_sched_thm2_task_set_is_true(task_set):
   assert s.schedulability_test_thm2(task_set) is True
 
-def test_sched_thm2_task_set_thm2(task_set):
-  task_set.sched_test_thm2()
-
-  assert task_set.thm2 is True
-
 ''' TEST THEOREM 3 '''
 
 def test_sched_thm3_unconstrained_task_set_is_false(unconstrained_task_set):
@@ -63,8 +52,3 @@ def test_sched_thm3_unconstrained_task_set_is_false(unconstrained_task_set):
 
 def test_sched_thm3_task_set_is_true(task_set):
   assert s.schedulability_test_thm3(task_set) is True
-
-def test_sched_thm3_task_set_thm3(task_set):
-  task_set.sched_test_thm3()
-
-  assert task_set.thm3 is True
