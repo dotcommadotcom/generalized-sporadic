@@ -3,8 +3,5 @@ venv_gs/*
 *.csv
 *.txt
 /archive/*
-simulation_settings.py
 ipad.code-workspace
-helper.py
 .gitignore
-main.py
