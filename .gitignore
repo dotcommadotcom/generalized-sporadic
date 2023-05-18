@@ -1,6 +1,5 @@
 venv_gs/*
 .DS_Store
-*.csv
 *.txt
 /archive/*
 ipad.code-workspace
