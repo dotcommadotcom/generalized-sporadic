@@ -1,4 +1,4 @@
-venv_gs/*
+gsvenv/*
 .DS_Store
 *.txt
 /archive/*
