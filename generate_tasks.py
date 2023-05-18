@@ -2,10 +2,6 @@ from enum import Enum
 from math import gcd, ceil, floor
 from functools import reduce
 import random as r
-import multiprocessing as mp
-
-import schedulability as s
-import dbfs as dbf
 
 MIN_U = 0.02
 MAX_U = 0.25
@@ -103,6 +99,19 @@ class Task_Set:
     for task in self.task_set.values():
       task_set_string += str(task) + "\n"
     return task_set_string
+  
+  def __repr__(self):
+    return """
+          'num_tasks': {}, 
+          't_max': {}, 
+          'utilization': {}, 
+          'thm1': {}, 
+          'thm2': {}, 
+          'thm3': {},
+          'lo_tasks_list': {},
+          'hi_tasks_list': {}
+          """.format(self.num_tasks, self.t_max, self.utilization, self.thm1, self.thm2, self.thm3,
+                      [repr(task) for task in self.lo_tasks_list], [repr(task) for task in self.hi_tasks_list])
   
   def generate_kato_utilizations(self, target_u):
     utilizations = []
