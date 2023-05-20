@@ -17,6 +17,7 @@ def parse_task_set_to_dict(task_set):
           }
 
 def parse_str_to_bool(bool_string):
+  if isinstance(bool_string, bool): return bool_string
   return True if bool_string == 'True' else False if bool_string == 'False' else None
 
 def parse_str_to_tasks(task_set_str):
@@ -73,7 +74,9 @@ def write_target_u_to_csv(total_count, header, target_u_list = []):
 
 def read_csv_to_dataframe(filename, limit = None):
   task_sets_dict_list = []
-  with open(filename + '.csv', 'r') as csvfile:
+  if 'csv' not in filename: filename = filename + '.csv'
+  
+  with open(filename, 'r') as csvfile:
     reader = csv.DictReader(csvfile)
 
     for row in reader:
@@ -83,11 +86,29 @@ def read_csv_to_dataframe(filename, limit = None):
   
   return pd.DataFrame(task_sets_dict_list)
 
-TOTAL_COUNT = 1000
-HEADER = ['num_tasks', 't_max', 'utilization', 'thm1', 'thm2', 'thm3', 'lo_tasks_list', 'hi_tasks_list']
-UTARGETS = [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.975]
+def read_csv_to_processed_dataframe(filename):
+  with open(filename, 'r') as csvfile:
+    reader = csv.DictReader(csvfile)
+    database = [row for row in reader]
+  
+  df = pd.DataFrame(database)
+  df['num_tasks'] = df['num_tasks'].astype(int)
+  df['t_max'] = df['t_max'].astype(int)
+  df['utilization'] = df['utilization'].astype(float)
+  df["thm1"] = df["thm1"].replace("True", True)
+  df["thm1"] = df["thm1"].replace("False", False)
+  df["thm2"] = df["thm2"].replace("True", True)
+  df["thm2"] = df["thm2"].replace("False", False)  
+  df["thm3"] = df["thm3"].replace("True", True)
+  df["thm3"] = df["thm3"].replace("False", False)
 
-if __name__ == "__main__":
-  write_target_u_to_csv(total_count =   TOTAL_COUNT, 
-                        header =        HEADER, 
-                        target_u_list = UTARGETS)
+  return df
+
+# TOTAL_COUNT = 1000
+# HEADER = ['num_tasks', 't_max', 'utilization', 'thm1', 'thm2', 'thm3', 'lo_tasks_list', 'hi_tasks_list']
+# UTARGETS = [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.975]
+
+# if __name__ == "__main__":
+#   write_target_u_to_csv(total_count =   TOTAL_COUNT, 
+#                         header =        HEADER, 
+#                         target_u_list = UTARGETS)
