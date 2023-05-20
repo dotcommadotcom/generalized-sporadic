@@ -1,4 +1,3 @@
-import os
 import sys
 import re
 import pandas as pd
@@ -6,9 +5,6 @@ import pandas as pd
 import generate_tasks as gt
 import csv_helper as ch
 import search_algorithm as alg
-
-def get_test_csv(filepath):
-  return sorted([filepath + file for file in os.listdir(filepath) if file.endswith('.csv')])
 
 def run_search_algorithm(dataframe):
   post_tight_results = []
@@ -29,7 +25,7 @@ def run_search_algorithm(dataframe):
   return post_tight_df
 
 TEST_DATABASE_FILEPATH = './test_database/' 
-TEST_DB = get_test_csv(TEST_DATABASE_FILEPATH)
+TEST_DB = ch.get_csv_filepath(TEST_DATABASE_FILEPATH)
 
 if len(sys.argv) < 2:
   print("Error: Provide utilization tag.")
