@@ -17,7 +17,7 @@ def run_sched_test1_parallel(dataframe, task_sets, indices, num_procs = 1):
   print("Elapsed time {:.2f} s".format(end_time - start_time))
 
 def run_sched_test1(dataframe, t_max_range = range(10), num_procs = 1):
-  task_sets = [gt.Task_Set(ts_dict=row.to_dict()) for _, row in dataframe.iterrows() if row["t_max"] in t_max_range and row["thm1"] is None]
+  task_sets = [gt.Task_Set(task_set_dict=row.to_dict()) for _, row in dataframe.iterrows() if row["t_max"] in t_max_range and row["thm1"] is None]
   indices = [index for index, row in dataframe.iterrows() if row["t_max"] in t_max_range and row["thm1"] is None]
   if len(task_sets) < 1: 
     print("All done for range {}".format(t_max_range))
@@ -27,7 +27,7 @@ def run_sched_test1(dataframe, t_max_range = range(10), num_procs = 1):
 def run_sched_test23(dataframe, t_max_range = range(10)):
   for index, row in dataframe.iterrows():
     if row["t_max"] in t_max_range and row["thm2"] is None:
-      task_set = gt.Task_Set(ts_dict=row.to_dict())
+      task_set = gt.Task_Set(task_set_dict=row.to_dict())
       dataframe.loc[index, "thm2"] = s.schedulability_test_thm2(task_set)
       dataframe.loc[index, "thm3"] = s.schedulability_test_thm3(task_set)
 
