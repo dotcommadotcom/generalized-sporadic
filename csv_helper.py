@@ -104,6 +104,9 @@ def read_csv_to_processed_dataframe(filename):
 
   return df
 
+def get_csv_filepath(filepath):
+  return sorted([filepath + file for file in os.listdir(filepath) if file.endswith('.csv')])
+
 # TOTAL_COUNT = 1000
 # HEADER = ['num_tasks', 't_max', 'utilization', 'thm1', 'thm2', 'thm3', 'lo_tasks_list', 'hi_tasks_list']
 # UTARGETS = [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.975]
