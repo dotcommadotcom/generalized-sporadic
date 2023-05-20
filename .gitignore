@@ -4,3 +4,6 @@ gsvenv/*
 /archive/*
 ipad.code-workspace
 .gitignore
+/csv/*
+/5000_clean/*
+/10000_clean/*
