@@ -69,7 +69,7 @@ def generate_task(utilization, ID = -1):
   return Task(ID, T, C_LO, C_HI, D, -1, L)
 
 class Task_Set:
-  def __init__(self, target_u = None, ts_dict = None):
+  def __init__(self, target_u = None, task_set_dict = None):
     if target_u:
       self.task_set = self.initialize_task_set(target_u)
       self.num_tasks = len(self.task_set)
@@ -81,14 +81,14 @@ class Task_Set:
       self.lo_tasks_list = [task for task in self.task_set.values() if task.L == Level.LO]
       self.hi_tasks_list = [task for task in self.task_set.values() if task.L == Level.HI]
     else:
-      self.num_tasks = ts_dict["num_tasks"]
-      self.t_max = ts_dict["t_max"]
-      self.utilization = ts_dict["utilization"]
-      self.thm1 = ts_dict["thm1"]
-      self.thm2 = ts_dict["thm2"]
-      self.thm3 = ts_dict["thm3"]
-      self.lo_tasks_list = ts_dict["lo_tasks_list"]
-      self.hi_tasks_list = ts_dict["hi_tasks_list"]
+      self.num_tasks = task_set_dict["num_tasks"]
+      self.t_max = task_set_dict["t_max"]
+      self.utilization = task_set_dict["utilization"]
+      self.thm1 = task_set_dict["thm1"]
+      self.thm2 = task_set_dict["thm2"]
+      self.thm3 = task_set_dict["thm3"]
+      self.lo_tasks_list = task_set_dict["lo_tasks_list"]
+      self.hi_tasks_list = task_set_dict["hi_tasks_list"]
       self.task_set = {task.ID : task for task in self.lo_tasks_list + self.hi_tasks_list}
 
   def __str__(self):
@@ -101,6 +101,9 @@ class Task_Set:
     return task_set_string
   
   def __repr__(self):
+    lo_tasks = str([repr(task) for task in self.lo_tasks_list])
+    hi_tasks = str([repr(task) for task in self.hi_tasks_list])
+
     return """
           'num_tasks': {}, 
           't_max': {}, 
@@ -111,7 +114,7 @@ class Task_Set:
           'lo_tasks_list': {},
           'hi_tasks_list': {}
           """.format(self.num_tasks, self.t_max, self.utilization, self.thm1, self.thm2, self.thm3,
-                      [repr(task) for task in self.lo_tasks_list], [repr(task) for task in self.hi_tasks_list])
+                      lo_tasks.replace("'", ""), hi_tasks.replace("'", ""))
   
   def generate_kato_utilizations(self, target_u):
     utilizations = []
