@@ -46,7 +46,7 @@ def task_set():
                    'lo_tasks_list': [gt.Task(0, 414, 13, 13, 300, 300), gt.Task(3, 115, 14, 14, 267, 267), gt.Task(5, 94, 7, 7, 172, 172)], 
                    'hi_tasks_list': [gt.Task(1, 122, 23, 46, 312, 312), gt.Task(2, 108, 18, 37, 107, 107), gt.Task(4, 132, 15, 50, 233, 233)]}
   
-  return gt.Task_Set(ts_dict = task_set_dict)
+  return gt.Task_Set(task_set_dict = task_set_dict)
 
 @pytest.fixture
 def unconstrained_task_set(random_target_u):

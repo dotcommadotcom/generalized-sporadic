@@ -31,7 +31,7 @@ def task_set_thm1_true():
                    'hi_tasks_list': [Task(1, 231, 8, 30, 363, 363), Task(2, 66, 14, 36, 150, 150), Task(3, 39, 7, 21, 396, 396), Task(4, 352, 15, 55, 129, 129)]
                    }
   
-  return Task_Set(ts_dict = task_set_dict)
+  return Task_Set(task_set_dict = task_set_dict)
 
 @pytest.fixture
 def task_set2():
@@ -45,7 +45,7 @@ def task_set2():
                   'hi_tasks_list': [Task(1, 111, 19, 52, 58, 58), Task(2, 224, 14, 48, 284, 284), Task(3, 49, 7, 17, 162, 162)]
                   }
   
-  return Task_Set(ts_dict = task_set_dict)
+  return Task_Set(task_set_dict = task_set_dict)
 
 @pytest.fixture
 def task_set():
@@ -59,7 +59,7 @@ def task_set():
                    'hi_tasks_list': [Task(0, 26, 5, 23, 31, 31), Task(1, 55, 10, 27, 356, 356)]
                    }
   
-  return Task_Set(ts_dict = task_set_dict)
+  return Task_Set(task_set_dict = task_set_dict)
 
 ''' TEST TIGHT D THEOREMS '''
 
