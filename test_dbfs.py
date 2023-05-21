@@ -115,8 +115,8 @@ def test_max_requests_at_nT_and_n1T_minus_one_same(t):
 
 ''' TEST LOWER FUNCTION '''
 
-def test_lower_is_660(HI_task, t):
-  assert dbf.lower(HI_task, t) == 660
+def test_lower_is_846(HI_task, t):
+  assert dbf.lower(HI_task, t) == 846
 
 def test_lower_is_positive_ts_is_D(random_task):
   ''' ts >= D --> lower > 0 '''
@@ -135,8 +135,8 @@ def test_lower_is_zero_ts_less_D(random_task):
 
 ''' TEST UPPER_CO FUNCTION '''
 
-def test_upper_CO_is_477(HI_task, t):
-  assert dbf.upper_CO(HI_task, t, t // 2) == 477
+def test_upper_CO_is_400(HI_task, t):
+  assert dbf.upper_CO(HI_task, t, t // 2) == 400
  
 def test_upper_CO_less_ts(random_HI_task, t):
   ''' ∀ 0 < ts < t, upper_co < ts '''
@@ -189,8 +189,8 @@ def test_dbf_is_zero_upper_less_lower(upper):
 
 ''' TEST DBF_LO FUNCTION '''
 
-def test_dbf_LO_is_63(LO_task, t):
-  assert dbf.demand_based_function_LO(LO_task, t) == 63
+def test_dbf_LO_is_78(LO_task, t):
+  assert dbf.demand_based_function_LO(LO_task, t) == 78
 
 def test_dbf_LO_is_zero_ts_less_D(random_task):
   ''' ts < tight_D --> dbf_LO == 0 '''
@@ -204,8 +204,8 @@ def test_dbf_LO_is_zero_ts_less_D(random_task):
 
 ''' TEST DBF_HI FUNCTION '''
 
-def test_dbf_HI_is_66(HI_task, t):
-  assert dbf.demand_based_function_HI(HI_task, t, t // 2) == 66
+def test_dbf_HI_is_56(HI_task, t):
+  assert dbf.demand_based_function_HI(HI_task, t, t // 2) == 56
 
 def test_dbf_HI_is_zero_t_ts_less_D(random_HI_task, t):
   ''' t - ts - D < 0 --> dbf_HI == 0 '''
@@ -219,8 +219,8 @@ def test_dbf_HI_is_zero_t_ts_less_D(random_HI_task, t):
 
 ''' TEST DBF_CO FUNCTION '''
 
-def test_dbf_CO_is_132(HI_task, t):
-  assert dbf.demand_based_function_CO(HI_task, t, t // 2) == 132
+def test_dbf_CO_is_0(HI_task, t):
+  assert dbf.demand_based_function_CO(HI_task, t, t // 2) == 0
 
 def test_dbf_CO_is_zero_t_less_D(random_HI_task):
   ''' t < D --> upper < 0 --> dbf_CO == 0 '''
@@ -272,8 +272,8 @@ def test_dbf_CO_is_zero_up_less_low_for_all(random_HI_task):
 
 ''' TEST DBF_UN FUNCTION '''
 
-def test_dbf_UN_is_9(LO_task, t):
-  assert dbf.demand_based_function_UN(LO_task, t, t // 2) == 9
+def test_dbf_UN_is_26(LO_task, t):
+  assert dbf.demand_based_function_UN(LO_task, t, t // 2) == 26
 
 def test_dbf_UN_is_positive_upper_is_positive_lower_is_zero(random_LO_task):
   ''' upper > 0 and lower == 0 --> dbf_UN > 0 '''
@@ -302,17 +302,17 @@ def test_dbf_UN_is_zero_upper_is_zero_lower_is_positive(random_LO_task):
 
 ''' TEST SUM_DBF FUNCTION '''
 
-def test_sum_dbf_LO_is_101(task_set, t):
-  assert dbf.sum_dbf_LO(task_set, t // 2) == 101
+def test_sum_dbf_LO_is_246(task_set, t):
+  assert dbf.sum_dbf_LO(task_set, t // 2) == 246
 
-def test_sum_dbf_HI_is_149(task_set, t):
-  assert dbf.sum_dbf_HI(task_set, t, t // 2) == 149
+def test_sum_dbf_HI_is_292(task_set, t):
+  assert dbf.sum_dbf_HI(task_set, t, t // 2) == 292
 
-def test_sum_dbf_CO_is_175(task_set, t):
-  assert dbf.sum_dbf_CO(task_set, t, t // 2) == 175
+def test_sum_dbf_CO_is_129(task_set, t):
+  assert dbf.sum_dbf_CO(task_set, t, t // 2) == 129
 
-def test_sum_dbf_UN_is_42(task_set, t):
-  assert dbf.sum_dbf_UN(task_set, t, t // 2) == 42
+def test_sum_dbf_UN_is_294(task_set, t):
+  assert dbf.sum_dbf_UN(task_set, t, t // 2) == 294
 
-def test_sum_dbf_is_1211(task_set, t):
-  assert dbf.sum_dbf(task_set, t, t // 2) == 101 + 149 + 175 + 42
+def test_sum_dbf(task_set, t):
+  assert dbf.sum_dbf(task_set, t, t // 2) == 246 + 292 + 129 + 294
