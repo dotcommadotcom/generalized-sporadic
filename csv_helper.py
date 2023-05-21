@@ -69,7 +69,7 @@ def write_task_sets_to_csv(total_count, filename, header, target_u = 0.5):
 
 def write_target_u_to_csv(total_count, header, target_u_list = []):
   for target_u in target_u_list:
-    filename = 'db_{}_{}'.format(int(target_u * 1000), total_count)
+    filename = './db_{}/db_{}_{}'.format(total_count, int(target_u * 1000), total_count)
     write_task_sets_to_csv(total_count, filename, header, target_u)
 
 def read_csv_to_dataframe(filename, limit = None):
@@ -115,3 +115,8 @@ UTARGETS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
   # write_target_u_to_csv(total_count =   TOTAL_COUNT, 
   #                       header =        HEADER, 
   #                       target_u_list = UTARGETS)
+
+  # db_filepath = get_csv_filepath('./db_10000/')
+  # for db in db_filepath:
+  #   df = read_csv_to_dataframe(db)
+  #   print(df.describe())
