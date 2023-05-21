@@ -1,5 +1,3 @@
-import multiprocessing as mp
-
 import dbfs as dbf
 
 def schedulability_test_thm1(task_set):
