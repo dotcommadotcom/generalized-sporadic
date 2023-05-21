@@ -137,4 +137,4 @@ class Task_Set:
     lo_utilization = sum([task.C_LO / task.T for task in self.task_set.values() if task.L == Level.LO])
     hi_utilization = sum([task.C_HI / task.T for task in self.task_set.values() if task.L == Level.HI])
 
-    return lo_utilization + hi_utilization
+    return (lo_utilization + hi_utilization)/2
