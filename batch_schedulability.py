@@ -1,7 +1,6 @@
 import sys
 import time
 import multiprocessing as mp
-import pandas as pd
 
 import generate_tasks as gt
 import csv_helper as ch
@@ -36,11 +35,12 @@ if len(sys.argv) < 2:
   sys.exit(1)
 
 PROCESS_N = 10
-TOTAL_COUNT = 5000
+TOTAL_COUNT = 10000
 TARGET_U = float(sys.argv[1])
-FILENAME = 'task_sets_{}_{}'.format(int(TARGET_U * 1000), TOTAL_COUNT)
+FILE_DIRECTORY = './db_{}/'.format(TOTAL_COUNT)
+FILENAME = 'db_{}_{}'.format(int(TARGET_U * 1000), TOTAL_COUNT)
 
-df = ch.read_csv_to_dataframe(FILENAME).sort_values('t_max', ascending=True)
+df = ch.read_csv_to_dataframe(FILE_DIRECTORY + FILENAME).sort_values('t_max', ascending=True)
 
 T_MAX_RANGES = [(int(df['t_max'].quantile(i/25)), int(df['t_max'].quantile((i+1)/25))) for i in range(0, 25)]
 
@@ -52,8 +52,8 @@ if __name__ == "__main__":
   print(T_MAX_RANGES)
 
   for i, j in T_MAX_RANGES:
-    run_sched_test1(df, t_max_range = range(i, j), num_procs = PROCESS_N)
-    run_sched_test23(df, t_max_range = range(i, j))
+    run_sched_test1(df, t_max_range = range(i, j + 1), num_procs = PROCESS_N)
+    run_sched_test23(df, t_max_range = range(i, j + 1))
     version = int(time.time())
     updated_file = './{}/'.format(int(TARGET_U * 1000)) + FILENAME + '_v{}'.format(version)
     df.to_csv(updated_file + '.csv', index = False)
