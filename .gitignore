@@ -7,3 +7,4 @@ ipad.code-workspace
 /csv/*
 /5000_clean/*
 /10000_clean/*
+*.csv
