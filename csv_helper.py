@@ -59,7 +59,7 @@ def write_header(filename, header):
 
 def write_task_sets_to_csv(total_count, filename, header, target_u = 0.5):
   write_header(filename, header)
-  task_sets_dict = [parse_task_set_to_dict(gt.generate_valid_task_set(target_u)) for _ in range(total_count)]
+  task_sets_dict = [parse_task_set_to_dict(gt.Task_Set(target_u)) for _ in range(total_count)]
   
   with open(filename + '.csv', 'a', newline='') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=header)
@@ -69,7 +69,7 @@ def write_task_sets_to_csv(total_count, filename, header, target_u = 0.5):
 
 def write_target_u_to_csv(total_count, header, target_u_list = []):
   for target_u in target_u_list:
-    filename = 'task_sets_{}_{}'.format(int(target_u * 1000), total_count)
+    filename = 'db_{}_{}'.format(int(target_u * 1000), total_count)
     write_task_sets_to_csv(total_count, filename, header, target_u)
 
 def read_csv_to_dataframe(filename, limit = None):
@@ -107,11 +107,11 @@ def read_csv_to_processed_dataframe(filename):
 def get_csv_filepath(filepath):
   return sorted([filepath + file for file in os.listdir(filepath) if file.endswith('.csv')])
 
-# TOTAL_COUNT = 1000
-# HEADER = ['num_tasks', 't_max', 'utilization', 'thm1', 'thm2', 'thm3', 'lo_tasks_list', 'hi_tasks_list']
-# UTARGETS = [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.975]
+TOTAL_COUNT = 10000
+HEADER = ['num_tasks', 't_max', 'utilization', 'thm1', 'thm2', 'thm3', 'lo_tasks_list', 'hi_tasks_list']
+UTARGETS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
 
 # if __name__ == "__main__":
-#   write_target_u_to_csv(total_count =   TOTAL_COUNT, 
-#                         header =        HEADER, 
-#                         target_u_list = UTARGETS)
+  # write_target_u_to_csv(total_count =   TOTAL_COUNT, 
+  #                       header =        HEADER, 
+  #                       target_u_list = UTARGETS)
