@@ -64,3 +64,39 @@ def tighten_deadline(task_set):
     candidates.appendleft(best_candidate)
 
   return ("No more eligible candidates", task_set) 
+
+def naive(task_set):
+  if not is_eligible(task_set):
+    return ("Not eligible for deadline-tightening", task_set)
+  
+  # Get all HI tasks 
+  candidates = deque([task.ID for task in task_set.hi_tasks_list])
+  best_candidate = -1
+  t, ts = get_failure_time(task_set)
+
+  while len(candidates) > 0: 
+    best_candidate = candidates.popleft() if len(candidates) > 0 else -1
+    if best_candidate < 0: return ("No more eligible candidates", task_set) 
+
+    C_LO, previous_tight_D = task_set.task_set[best_candidate].C_LO, task_set.task_set[best_candidate].tight_D
+
+    # Decrement
+    task_set.task_set[best_candidate].tight_D -= 1
+
+    # Check if reached limit
+    if task_set.task_set[best_candidate].tight_D < C_LO:
+      continue
+
+    # Backtrack if tightening deadline causes theorem 2 or 3 to be false
+    if not (s.schedulability_test_thm2(task_set) and s.schedulability_test_thm3(task_set)):
+      task_set.task_set[best_candidate].tight_D = previous_tight_D
+      continue
+    
+    # Check if theorem 1 is True with tightened deadline or if theorem 1 fails at another time
+    t, ts = get_failure_time(task_set)
+    if (t, ts) == (-1, -1): 
+      return (True, task_set) # Task set is now schedulable with tightened deadline
+    
+    candidates.appendleft(best_candidate)
+
+  return ("No more eligible candidates", task_set) 
