@@ -107,16 +107,25 @@ def read_csv_to_processed_dataframe(filename):
 def get_csv_filepath(filepath):
   return sorted([filepath + file for file in os.listdir(filepath) if file.endswith('.csv')])
 
-TOTAL_COUNT = 10000
-HEADER = ['num_tasks', 't_max', 'utilization', 'thm1', 'thm2', 'thm3', 'lo_tasks_list', 'hi_tasks_list']
-UTARGETS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
+def get_filtered_filenames(origin_path, prefix):
+  filtered_files = []
+  for file in os.listdir(origin_path):
+    if file.startswith(prefix) and file.endswith('.csv'):
+      filtered_files.append(origin_path + file)
+  return filtered_files
 
-# if __name__ == "__main__":
-  # write_target_u_to_csv(total_count =   TOTAL_COUNT, 
-  #                       header =        HEADER, 
-  #                       target_u_list = UTARGETS)
-
-  # db_filepath = get_csv_filepath('./db_10000/')
-  # for db in db_filepath:
-  #   df = read_csv_to_dataframe(db)
-  #   print(df.describe())
+def preprocess_data_remove_duplicates(file_names):
+  dfs = []
+  for file_name in file_names:
+    df = pd.read_csv(file_name)  
+    df = df.dropna()
+    assert not df.isnull().any().any(), "DataFrame contains NaN values"
+    dfs.append(df)
+  
+  combined_df = pd.concat(dfs, ignore_index=True)  
+  combined_df.drop_duplicates(inplace=True)  
+  combined_df["thm1"] = combined_df["thm1"].astype(bool)
+  combined_df["thm2"] = combined_df["thm2"].astype(bool)
+  combined_df["thm3"] = combined_df["thm3"].astype(bool)
+  # combined_df = combined_df.sample(n=11000)
+  return combined_df
