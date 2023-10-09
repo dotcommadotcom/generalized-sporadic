@@ -8,3 +8,4 @@ ipad.code-workspace
 /5000_clean/*
 /10000_clean/*
 *.csv
+./database
