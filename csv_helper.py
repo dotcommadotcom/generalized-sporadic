@@ -1,6 +1,7 @@
 import csv
 import os
 import pandas as pd
+import numpy as np
 
 import generate_tasks as gt
 
@@ -69,7 +70,7 @@ def write_task_sets_to_csv(total_count, filename, header, target_u = 0.5):
 
 def write_target_u_to_csv(total_count, header, target_u_list = []):
   for target_u in target_u_list:
-    filename = './db_{}/db_{}_{}'.format(total_count, int(target_u * 1000), total_count)
+    filename = './db2_{}/db_{}_{}'.format(total_count, int(target_u * 1000), total_count)
     write_task_sets_to_csv(total_count, filename, header, target_u)
 
 def read_csv_to_dataframe(filename, limit = None):
@@ -129,3 +130,21 @@ def preprocess_data_remove_duplicates(file_names):
   combined_df["thm3"] = combined_df["thm3"].astype(bool)
   # combined_df = combined_df.sample(n=11000)
   return combined_df
+
+COUNT_PER_USUM = 10000
+HEADER = ['num_tasks', 't_max', 'utilization', 'thm1', 'thm2', 'thm3', 'lo_tasks_list', 'hi_tasks_list']
+# UTARGETS = [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.975]
+UTARGETS = np.arange(0.3, 0.825, 0.025)
+print(UTARGETS)
+# USUM = 0.8
+# FILENAME = './db2_{}/db_{}_{}'.format(COUNT_PER_USUM, USUM, COUNT_PER_USUM * len(UTARGETS))
+
+# if __name__ == "__main__":
+  # print("running..........")
+  # write_target_u_to_csv(total_count =   COUNT_PER_USUM, 
+  #                       header =        HEADER, 
+  #                       target_u_list = UTARGETS)
+
+  # task_sets_db, task_sets_df = read_csv_to_processed_dataframe(FILENAME)
+
+  # print(task_sets_df)
