@@ -1,7 +1,6 @@
 # Ignore hidden files
 .vscode/settings.json
 .DS_Store
-.gitignore
 
 # Ignore text and CSV files
 *.txt
