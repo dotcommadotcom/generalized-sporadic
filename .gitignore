@@ -1,11 +1,11 @@
-gsvenv/*
+# Ignore hidden files
+.vscode/settings.json
 .DS_Store
-*.txt
-/archive/*
-ipad.code-workspace
 .gitignore
-/csv/*
-/5000_clean/*
-/10000_clean/*
+
+# Ignore text and CSV files
+*.txt
 *.csv
-./database
+
+# Ignore files in archive folder
+/archive/*
