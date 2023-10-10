@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
   int before_success = 0, after_eds_success = 0, after_naive_success = 0;
   vector<int> result;
   int cum_duration = 0, cum_duration2 = 0; 
-  int cum_eds_duration = 0, cum_naive_duration = 0;
+  double cum_eds_duration = 0, cum_naive_duration = 0;
 
   for (int i = 0; i < count; ++i) {
     TaskSet task_set_eds = TaskSet(utilization);
