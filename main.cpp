@@ -5,6 +5,21 @@
 
 #include "./src/search_algorithm.h"
 
+void create_csv_file(string filename) {
+  ifstream file_check(filename);
+    
+  if (!file_check.is_open()) {
+    std::ofstream file_create(filename);
+        
+    if (file_create.is_open()) {
+      file_create << "utilization,num_tasks,before_success_count,eds_success_count,eds_cum_duration,naive_success_count,naive_cum_duration" << endl;
+      file_create.close();
+    } else return;
+  } else {
+    file_check.close();
+  }
+}
+
 void write_result_to_csv(const string& filename, const vector<int>& test_result) {
   ofstream file(filename, ios::app);
   if (!file.is_open()) {
@@ -66,6 +81,7 @@ int main(int argc, char* argv[]) {
     cum_naive_duration += duration.count();
   }
 
+  result.push_back(static_cast<int>(utilization * 1000));
   result.push_back(count);
   result.push_back(before_success);
   result.push_back(after_eds_success);
@@ -73,5 +89,8 @@ int main(int argc, char* argv[]) {
   result.push_back(after_naive_success);
   result.push_back(cum_naive_duration);
 
-  write_result_to_csv(to_string(count) + ".csv", result);
+  string filename = "experiment_result.csv";
+
+  create_csv_file(filename);
+  write_result_to_csv(filename, result);
 }
