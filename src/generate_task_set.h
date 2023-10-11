@@ -70,6 +70,23 @@ public:
     this->t_max = calculate_t_max();
   }
 
+  TaskSet& operator=(const TaskSet& other) {
+    if (this != &other) {
+      this->num_tasks = other.num_tasks;
+      this->utilization = other.utilization;
+      this->t_max = other.t_max;
+      this->thm1 = other.thm1;
+      this->thm2 = other.thm2;
+      this->thm3 = other.thm3;
+
+      for (const auto& [key, task] : other.get_task_set()) {
+        Task copied_task = task;
+        this->task_set[key] = copied_task;
+      }
+    }
+    return *this;
+  }
+
   double calculate_t_max() {
     double lcm = lcmT_maxD();
     double u = U_maxTD();
@@ -94,6 +111,12 @@ public:
     }
 
     return (lo_utilization + hi_utilization) / 2;
+  }
+
+  void constrain_deadlines() {
+    for (auto& [key, task] : task_set) {
+      if (task.T > task.D) task.T = task.D;
+    }
   }
 
   string task_set_to_string() {

@@ -30,4 +30,16 @@ TEST(GenerateTaskSet, TaskSet) {
   EXPECT_EQ(task_set.calculate_t_max(), 224);
 }
 
+TEST(GenerateTaskSet, ConstrainDeadlines) {
+  TaskSet random_task_set = TaskSet(0.5);
+
+  TaskSet random_task_set_copy = random_task_set;
+  random_task_set_copy.constrain_deadlines();
+
+  EXPECT_NE(&random_task_set, &random_task_set_copy);
+  for (auto& [key, task] : random_task_set_copy.get_task_set()) {
+    EXPECT_LE(task.T, task.D);
+  }
+}
+
 #endif
