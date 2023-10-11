@@ -19,9 +19,9 @@ TEST(SearchAlgorithm, DemandChange) {
 
   if (random_task_set.get_hi_count() > 0) {
     int id;
-    for (const auto& task : random_task_set.get_task_set()) {
-      if (task.second.L == HI) {
-        id = task.second.ID;
+    for (const auto& [key, task] : random_task_set.get_task_set()) {
+      if (task.L == HI) {
+        id = task.ID;
         break;
       }
     }
@@ -100,8 +100,7 @@ TEST(SearchAlgorithm, InitializeCandidates) {
 
   EXPECT_EQ(candidates.size(), random_task_set.get_hi_count());
   if (random_task_set.get_hi_count() > 0) {
-    for (const auto& task_map : random_task_set.get_task_set()) {
-      Task task = task_map.second;
+    for (const auto& [key, task] : random_task_set.get_task_set()) {
       if (task.L == HI) {
         EXPECT_TRUE(task.C_HI - task.C_LO <= random_task_set.task_set[best_candidate].C_HI - random_task_set.task_set[best_candidate].C_LO);
         EXPECT_GE(find_optimal_tight_D(task.T, task.C_LO, task.tight_D, ts), task.C_LO);
@@ -153,8 +152,7 @@ TEST(SearchAlgorithm, FindOptimalTightDWithinBounds) {
   TaskSet random_task_set = TaskSet(0.6);
 
   if (random_task_set.get_hi_count() > 0) {
-    for (const auto& task_map : random_task_set.get_task_set()) {
-      Task task = task_map.second;
+    for (const auto& [key, task] : random_task_set.get_task_set()) {
       if (task.L == HI) {
         EXPECT_GE(find_optimal_tight_D(task.T, task.C_LO, task.tight_D, ts), task.C_LO);
         EXPECT_LE(find_optimal_tight_D(task.T, task.C_LO, task.tight_D, ts), task.D);

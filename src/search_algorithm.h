@@ -14,9 +14,9 @@ bool is_eligible(TaskSet& task_set) {
 deque<int> initialize_candidates(TaskSet& task_set) {
   vector<Task> hi_tasks;
 
-  for (const auto& task : task_set.get_task_set()) {
-    if (task.second.L == HI) {
-      hi_tasks.push_back(task.second);
+  for (const auto& [key, task] : task_set.get_task_set()) {
+    if (task.L == HI) {
+      hi_tasks.push_back(task);
     }
   }
 
@@ -105,9 +105,9 @@ pair<string, TaskSet> naive_algorithm(TaskSet& task_set) {
   }
 
   deque<int> candidates;
-  for (const auto& task : task_set.get_task_set()) {
-    if (task.second.ID == HI) {
-      candidates.push_back(task.second.ID);
+  for (const auto& [key, task] : task_set.get_task_set()) {
+    if (task.ID == HI) {
+      candidates.push_back(task.ID);
     }
   }
   

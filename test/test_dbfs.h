@@ -58,8 +58,7 @@ TEST(DBF, LowerUpperTaskSet) {
 
   Task HI_task, LO_task;
 
-  for (const auto& task_map : task_set.get_task_set()) {
-    Task task = task_map.second;
+  for (const auto& [key, task] : task_set.get_task_set()) {
     if (task.L == HI) HI_task = task;
     if (task.L == LO) LO_task = task;
   }
@@ -123,8 +122,7 @@ TEST(DBF, DemandBasedFunctionTask) {
   
   int t = 1000;
   Task HI_task, LO_task;
-  for (const auto& task_map : task_set.get_task_set()) {
-    Task task = task_map.second;
+  for (const auto& [key, task] : task_set.get_task_set()) {
     if (task.L == HI) HI_task = task;
     if (task.L == LO) LO_task = task;
   }
