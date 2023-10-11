@@ -6,7 +6,7 @@ LIBS = -lomp
 SRC = main.cpp
 TARGET = main
 
-COUNT = 100
+COUNT = 10000
 UTILIZATION = 0.5
 
 all: $(TARGET)

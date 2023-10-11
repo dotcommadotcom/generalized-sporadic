@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
   int before_success = 0, after_eds_success = 0, after_naive_success = 0;
   vector<int> result;
   int cum_duration = 0, cum_duration2 = 0; 
-  double cum_eds_duration = 0, cum_naive_duration = 0;
+  unsigned long long cum_eds_duration = 0, cum_naive_duration = 0;
 
   for (int i = 0; i < count; ++i) {
     TaskSet task_set_eds = TaskSet(utilization);
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
       after_eds_success++;
     } 
     auto end_time = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time);
+    auto duration = chrono::duration_cast<chrono::milliseconds>(end_time - start_time);
     cum_eds_duration += duration.count();
 
     // Naive Algorithm
@@ -77,8 +77,9 @@ int main(int argc, char* argv[]) {
       after_naive_success++;
     } 
     end_time = chrono::high_resolution_clock::now();
-    duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time);
-    cum_naive_duration += duration.count();
+    duration = chrono::duration_cast<chrono::milliseconds>(end_time - start_time);
+    assert(end_time >= start_time);
+    cum_naive_duration += static_cast<unsigned long long>(duration.count());
   }
 
   result.push_back(static_cast<int>(utilization * 1000));
