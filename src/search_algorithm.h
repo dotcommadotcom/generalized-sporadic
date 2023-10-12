@@ -87,7 +87,6 @@ pair<string, TaskSet> deadline_search_algorithm(TaskSet& task_set) {
     }
 
     auto [t, ts] = get_failure_time(task_set);
-    cout << t << " " << ts << endl;
     if (t == -1 && ts == -1) {
       return {"Success", task_set};
     }

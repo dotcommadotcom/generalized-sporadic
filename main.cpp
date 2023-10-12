@@ -44,7 +44,8 @@ int main(int argc, char* argv[]) {
   }
 
   int count = stoi(argv[1]);
-  double utilization = stod(argv[2]);
+  double utilization = stod(argv[2]) / 1000;
+  cout << to_string(count) << " " << to_string(utilization) << endl;
   int before_success = 0, after_eds_success = 0, after_naive_success = 0;
   vector<int> result;
   int cum_duration = 0, cum_duration2 = 0; 

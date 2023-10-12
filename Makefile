@@ -6,8 +6,8 @@ LIBS = -lomp
 SRC = main.cpp
 TARGET = main
 
-COUNT = 100
-UTILIZATION = 0.5
+COUNT = 10
+# UTILIZATION = 500
 
 all: $(TARGET)
 
@@ -20,22 +20,23 @@ run: $(TARGET)
 clean:
 	rm -f $(TARGET)
 
-run-all: all run clean
+run-all:
+	for UTILIZATION in $$(seq 100 50 950); do \
+		make run UTILIZATION=$$UTILIZATION; \
+	done
+	make clean
 
 .PHONY: all clean
 
-EK = ekberg_experiment.cpp
-EK2 = ekberg_experiment
+ptarget = parallelism
 
-ek: $(EK2)
-
-$(EK2): $(EK)
+$(ptarget): parallelism.cpp
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LIBS) $^ -o $@
 
-ekberg: $(EK2)
-	./$(EK2)
+prun: $(ptarget)
+	./$(ptarget)
 
-ekclean:
-	rm -f $(EK2)
+pclean:
+	rm -f $(ptarget)
 
-ekrun: ek ekberg ekclean
+prunall: $(ptarget) prun pclean
