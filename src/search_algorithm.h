@@ -32,6 +32,16 @@ deque<int> initialize_candidates(TaskSet& task_set) {
   return candidates;
 }
 
+deque<int> get_hi_candidates(TaskSet& task_set) {
+  deque<int> candidates;
+  for (const auto& [key, task] : task_set.get_task_set()) {
+    if (task.ID == HI) {
+      candidates.push_back(task.ID);
+    }
+  }
+  return candidates;
+}
+
 pair<int, int> get_failure_time(TaskSet& task_set) {
   for (int i = 2; i < task_set.get_t_max() + 1; ++i) {
     for (int j = 1; j < i; ++j) {
@@ -104,13 +114,7 @@ pair<string, TaskSet> naive_algorithm(TaskSet& task_set) {
     return {"Not eligible for deadline-tightening", task_set};
   }
 
-  deque<int> candidates;
-  for (const auto& [key, task] : task_set.get_task_set()) {
-    if (task.ID == HI) {
-      candidates.push_back(task.ID);
-    }
-  }
-  
+  deque<int> candidates = get_hi_candidates(task_set);
   int best_candidate = -1;
   auto [t, ts] = get_failure_time(task_set);
 
