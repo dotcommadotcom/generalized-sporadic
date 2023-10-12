@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
   result.push_back(after_naive_success);
   result.push_back(cum_naive_duration);
 
-  string filename = "experiment_result.csv";
+  string filename = "experiment.csv";
 
   create_csv_file(filename);
   write_result_to_csv(filename, result);

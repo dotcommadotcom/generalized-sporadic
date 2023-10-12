@@ -238,4 +238,27 @@ TEST(SearchAlgorithm, TightDDecreased) {
   EXPECT_EQ(failure_time.second, -1);
 }
 
+TEST(SearchAlgorithm, NaiveGetCandidates) {
+  TaskSet random_task_set = TaskSet(0.5);
+
+   deque<int> hi_candidates = get_hi_candidates(random_task_set);
+
+   for (size_t i = 0; i < hi_candidates.size(); i++) {
+    EXPECT_EQ(random_task_set.get_task_set()[hi_candidates[i]].L, HI);
+  }
+}
+
+TEST(SearchAlgorithm, NaiveTightD) {
+  TaskSet random_task_set = TaskSet(0.5);
+
+  auto [result, changed_task_set] = naive_algorithm(random_task_set);
+
+  for (const auto& [key, task] : changed_task_set.get_task_set()) {
+    if (task.L == HI) {
+      EXPECT_GE(task.tight_D, task.C_LO);
+      EXPECT_LE(task.tight_D, task.D);
+    }
+  }
+}
+
 #endif

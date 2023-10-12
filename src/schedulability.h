@@ -66,4 +66,15 @@ bool schedulability_test_thm3(TaskSet& task_set) {
   return true;
 }
 
+bool schedulability_test_thm2_3(TaskSet& task_set) {
+  if (task_set.get_t_max() == 0) return false;
+
+  for (int i = 1; i < task_set.get_t_max() + 1; ++i) {
+    if (sum_dbf_LO(task_set, i) > i || sum_dbf_HI(task_set, i, 0) > i) {
+      return false;
+    }
+  }
+  return true;
+}
+
 #endif

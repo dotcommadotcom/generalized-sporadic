@@ -11,7 +11,7 @@ $(TARGET): $(SRCS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 test: $(TARGET)
-	./$(TARGET)
+	./$(TARGET) 
 
 clean:
 	rm -f $(TARGET)
@@ -19,3 +19,5 @@ clean:
 run-all: all test clean
 
 .PHONY: all test clean run-all
+
+// --gtest_filter=SearchAlgorithm.NaiveTightD

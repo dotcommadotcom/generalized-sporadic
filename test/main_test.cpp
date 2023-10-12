@@ -5,6 +5,7 @@
 #include "test_dbfs.h"
 #include "test_schedulability.h"
 #include "test_search_algorithm.h"
+#include "test_ekberg.h"
 
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);

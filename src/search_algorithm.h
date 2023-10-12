@@ -32,16 +32,6 @@ deque<int> initialize_candidates(TaskSet& task_set) {
   return candidates;
 }
 
-deque<int> get_hi_candidates(TaskSet& task_set) {
-  deque<int> candidates;
-  for (const auto& [key, task] : task_set.get_task_set()) {
-    if (task.ID == HI) {
-      candidates.push_back(task.ID);
-    }
-  }
-  return candidates;
-}
-
 pair<int, int> get_failure_time(TaskSet& task_set) {
   for (int i = 2; i < task_set.get_t_max() + 1; ++i) {
     for (int j = 1; j < i; ++j) {
@@ -67,9 +57,7 @@ int find_optimal_tight_D(int T, int C_LO, int previous_tight_D, int ts) {
 }
 
 pair<string, TaskSet> deadline_search_algorithm(TaskSet& task_set) {
-  if (!is_eligible(task_set)) {
-    return {"Not eligible for deadline-tightening", task_set};
-  }
+  if (!is_eligible(task_set)) return {"Not eligible for deadline-tightening", task_set};
 
   deque<int> candidates = initialize_candidates(task_set);
   int best_candidate = -1;
@@ -93,12 +81,13 @@ pair<string, TaskSet> deadline_search_algorithm(TaskSet& task_set) {
       continue;
     }
 
-    if (!(schedulability_test_thm2(task_set) && schedulability_test_thm3(task_set))) {
+    if (!schedulability_test_thm2_3(task_set)) {
       task_set.task_set[best_candidate].tight_D = previous_tight_D;
       continue;
     }
 
     auto [t, ts] = get_failure_time(task_set);
+    cout << t << " " << ts << endl;
     if (t == -1 && ts == -1) {
       return {"Success", task_set};
     }
@@ -109,10 +98,18 @@ pair<string, TaskSet> deadline_search_algorithm(TaskSet& task_set) {
   return {"No more eligible candidates", task_set};
 }
 
-pair<string, TaskSet> naive_algorithm(TaskSet& task_set) {
-  if (!is_eligible(task_set)) {
-    return {"Not eligible for deadline-tightening", task_set};
+deque<int> get_hi_candidates(TaskSet& task_set) {
+  deque<int> candidates;
+  for (const auto& [key, task] : task_set.get_task_set()) {
+    if (task.L == HI) {
+      candidates.push_back(task.ID);
+    }
   }
+  return candidates;
+}
+
+pair<string, TaskSet> naive_algorithm(TaskSet& task_set) {
+  if (!is_eligible(task_set)) return {"Not eligible for deadline-tightening", task_set};
 
   deque<int> candidates = get_hi_candidates(task_set);
   int best_candidate = -1;
@@ -121,17 +118,18 @@ pair<string, TaskSet> naive_algorithm(TaskSet& task_set) {
   while (!candidates.empty()) {
     best_candidate = candidates.front();
     candidates.pop_front();
-    
+
     int C_LO = task_set.task_set[best_candidate].C_LO;
     int previous_tight_D = task_set.task_set[best_candidate].tight_D;
 
     task_set.task_set[best_candidate].tight_D -= 1;
     
     if (task_set.task_set[best_candidate].tight_D < C_LO) {
+      task_set.task_set[best_candidate].tight_D = previous_tight_D;
       continue;
     }
     
-    if (!(schedulability_test_thm2(task_set) && schedulability_test_thm3(task_set))) {
+    if (!schedulability_test_thm2_3(task_set)) {
       task_set.task_set[best_candidate].tight_D = previous_tight_D;
       continue;
     }
@@ -146,4 +144,5 @@ pair<string, TaskSet> naive_algorithm(TaskSet& task_set) {
 
   return {"No more eligible candidates", task_set};
 }
+
 #endif

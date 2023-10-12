@@ -26,6 +26,7 @@ TEST(Schedulability, FalseTaskSet) {
   
   EXPECT_FALSE(schedulability_test_thm1(task_set));
   EXPECT_FALSE(schedulability_test_thm3(task_set));
+  EXPECT_FALSE(schedulability_test_thm2_3(task_set));
 }
 
 TEST(Schedulability, FalseTaskSet2) {
@@ -35,6 +36,12 @@ TEST(Schedulability, FalseTaskSet2) {
   TaskSet task_set = TaskSet(task_set_dict);
   
   EXPECT_FALSE(schedulability_test_thm2(task_set));
+  EXPECT_FALSE(schedulability_test_thm2_3(task_set));
 }
 
+TEST(Schedulability, Sched23) {
+  TaskSet task_set = TaskSet(0.5);
+  
+  EXPECT_EQ(schedulability_test_thm2(task_set) || schedulability_test_thm3(task_set), schedulability_test_thm2_3(task_set));
+}
 #endif
