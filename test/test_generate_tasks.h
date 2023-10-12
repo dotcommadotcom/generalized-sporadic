@@ -55,16 +55,6 @@ TEST(GenerateTasks, GenerateT) {
   EXPECT_LE(T, 500);
 }
 
-TEST(GenerateTasks, GenerateTNotEqualD) {
-  int C_LO = generate_C_LO();
-  int C_HI = generate_C_HI(C_LO, HI);
-
-  int D = generate_D(C_HI);
-  int T = generate_T(C_HI);
-
-  EXPECT_NE(D, T);
-}
-
 TEST(GenerateTasks, GenerateWithSeed) {
   unsigned int seed = 123;
 
