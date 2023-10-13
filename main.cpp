@@ -61,12 +61,16 @@ int main(int argc, char* argv[]) {
 
     if (task_set_eds.get_thm1() && task_set_eds.get_thm2() && task_set_eds.get_thm3()) {
       before_success++;
+      after_eds_success++;
+      after_naive_success++;
     }
 
     // Enhanced Deadline Search Algorithm
     auto start_time = chrono::high_resolution_clock::now();
-    if (!is_eligible(task_set_eds) || deadline_search_algorithm(task_set_eds).first == "Success") {
-      after_eds_success++;
+    if (is_eligible(task_set_eds)) {
+      if (deadline_search_algorithm(task_set_eds).first == "Success") {
+        after_eds_success++;
+      }
     } 
     auto end_time = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::milliseconds>(end_time - start_time);
@@ -74,8 +78,10 @@ int main(int argc, char* argv[]) {
 
     // Naive Algorithm
     start_time = chrono::high_resolution_clock::now();
-    if (!is_eligible(task_set_naive) || naive_algorithm(task_set_naive).first == "Success") {
-      after_naive_success++;
+    if (is_eligible(task_set_naive)) {
+      if (naive_algorithm(task_set_eds).first == "Success") {
+        after_naive_success++;
+      }
     } 
     end_time = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::milliseconds>(end_time - start_time);

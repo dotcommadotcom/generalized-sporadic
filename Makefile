@@ -6,8 +6,8 @@ LIBS = -lomp
 SRC = main.cpp
 TARGET = main
 
-COUNT = 10
-# UTILIZATION = 500
+COUNT = 1000
+UTILIZATION = 350
 
 all: $(TARGET)
 
@@ -20,11 +20,7 @@ run: $(TARGET)
 clean:
 	rm -f $(TARGET)
 
-run-all:
-	for UTILIZATION in $$(seq 100 50 950); do \
-		make run UTILIZATION=$$UTILIZATION; \
-	done
-	make clean
+run-all: all run clean
 
 .PHONY: all clean
 
