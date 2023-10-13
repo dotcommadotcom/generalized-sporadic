@@ -115,7 +115,7 @@ public:
 
   void constrain_deadlines() {
     for (auto& [key, task] : task_set) {
-      if (task.T > task.D) task.T = task.D;
+      if (task.T < task.D) task.D = task.T;
     }
   }
 
