@@ -88,6 +88,7 @@ pair<string, TaskSet> deadline_search_algorithm(TaskSet& task_set) {
 
     auto [t, ts] = get_failure_time(task_set);
     if (t == -1 && ts == -1) {
+      task_set.set_thm1(true);
       return {"Success", task_set};
     }
 
@@ -135,6 +136,7 @@ pair<string, TaskSet> naive_algorithm(TaskSet& task_set) {
 
     auto [t, ts] = get_failure_time(task_set);
     if (t == -1 && ts == -1) {
+      task_set.set_thm1(true);
       return {"Success", task_set};
     }
 
