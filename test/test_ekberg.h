@@ -160,4 +160,21 @@ TEST(Ekberg, IsEligibleOrNot) {
   EXPECT_TRUE(ekberg_is_eligible(eligible_task_set));
   EXPECT_FALSE(ekberg_is_eligible(not_eligible_task_set));
 }
+
+TEST(Ekberg, GetHiCandidates) {
+  map<string, vector<Task>> task_set_dict = {};
+  task_set_dict["lo"] = {Task(0, 5, 2, 2, 4)};
+  task_set_dict["hi"] = {Task(1, 7, 1, 2, 6), Task(2, 6, 2, 4, 6)};
+  TaskSet task_set = TaskSet(0.5);
+
+  vector<int> candidates = get_hi_candidates_vector(task_set);
+
+  for (const auto& [key, task] : task_set.get_task_set()) {
+    if (task.L == HI) {
+      EXPECT_NE(find(candidates.begin(), candidates.end(), task.ID), candidates.end());
+    } else {
+      EXPECT_EQ(task.L, LO);
+    }
+  }
+}
 #endif

@@ -64,39 +64,57 @@ bool ekberg_is_eligible(TaskSet& task_set) {
   return !task_set.get_thm1() || !task_set.get_thm2();
 }
 
-// bool get_max_demand_candidate(TaskSet& task_set) {
-//   return !task_set.get_thm1() || !task_set.get_thm2();
-// }
+vector<int> get_hi_candidates_vector(TaskSet& task_set) {
+  vector<int> hi_tasks;
 
-// pair<string, TaskSet> ekberg_algorithm(TaskSet& task_set) {
-//   if (!ekberg_is_eligible(task_set)) return {"Not eligible for deadline-tightening", task_set};
+  for (const auto& [key, task] : task_set.get_task_set()) {
+    if (task.L == HI) {
+      hi_tasks.push_back(task.ID);
+    }
+  }
 
-//   deque<int> candidates = get_hi_candidates(task_set);
-//   int best_candidate = -1;
+  return hi_tasks;
+}
 
-//   while (true) {
-//     bool result = true;
+int get_max_demand_candidate(vector<int>& candidates, TaskSet& task_set, int t) {
+  int max_demand_difference = 0, max_candidate = -1;
+  for (const auto& id : candidates) {
+    int current_demand_difference = ekberg_hi(task_set.task_set[id], t) - ekberg_hi(task_set.task_set[id], t - 1);
+    max_candidate = current_demand_difference > max_demand_difference ? id : max_candidate;
+    max_demand_difference = current_demand_difference > max_demand_difference ? current_demand_difference : max_demand_difference;
+  }
+  return max_candidate;
+}
 
-//     for (int i = 0; i < task_set.get_t_max() + 1; ++i) {
-//       if (ekberg_lo_sum(task_set, i) > i) {
-//         if (best_candidate == -1) return {"No more eligible candidates", task_set};
-//         task_set.task_set[best_candidate].tight_D += 1;
-//         candidates.pop_front()
-//       } else if (ekberg_hi_sum(task_set, i) > i) { 
-//         if (candidates.empty()) return {"No more eligible candidates", task_set};
+pair<string, TaskSet> ekberg_algorithm(TaskSet& task_set) {
+  if (!ekberg_is_eligible(task_set)) return {"Not eligible for deadline-tightening", task_set};
 
-//       }
-//     }
-//   }
+  vector<int> candidates = get_hi_candidates_vector(task_set);
+  int best_candidate = -1;
 
-//   // if (task_set.get_t_max() == 0) return false;
+  while (!candidates.empty()) {
+    bool result = true;
 
-//   // for (int i = 0; i < task_set.get_t_max() + 1; ++i) {
-//   //   if (ekberg_hi_sum(task_set, i) > i) {
-//   //     return false;
-//   //   } else if (ekberg_lo_sum(task_set, i) > i) {
-//   //     return false;
-//   //   }
-//   // }
-//   // return true;
-// }
+    for (int i = 0; i < task_set.get_t_max() + 1; ++i) {
+      if (ekberg_lo_sum(task_set, i) > i) {
+        if (best_candidate == -1) return {"No more eligible candidates", task_set};
+        task_set.task_set[best_candidate].tight_D += 1;
+        candidates.erase(remove(candidates.begin(), candidates.end(), best_candidate), candidates.end());
+        result = false;
+      } else if (ekberg_hi_sum(task_set, i) > i) { 
+        if (candidates.empty()) return {"No more eligible candidates", task_set};
+        
+        best_candidate = get_max_demand_candidate(candidates, task_set, i);
+
+        task_set.task_set[best_candidate].tight_D--;
+        if (task_set.task_set[best_candidate].tight_D == task_set.task_set[best_candidate].C_LO) {
+          candidates.erase(remove(candidates.begin(), candidates.end(), best_candidate), candidates.end());
+        }
+        result = false;
+      }
+    }
+    if (result) return {"Success", task_set};
+  }
+
+  return {"No more eligible candidates", task_set};
+}
