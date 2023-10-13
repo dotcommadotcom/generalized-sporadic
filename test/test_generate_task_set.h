@@ -38,7 +38,7 @@ TEST(GenerateTaskSet, ConstrainDeadlines) {
 
   EXPECT_NE(&random_task_set, &random_task_set_copy);
   for (auto& [key, task] : random_task_set_copy.get_task_set()) {
-    EXPECT_LE(task.T, task.D);
+    EXPECT_LE(task.D, task.T);
   }
 }
 
