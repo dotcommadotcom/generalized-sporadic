@@ -10,7 +10,6 @@
 TEST(SearchAlgorithm, DemandChange) {
   int t = 1000, ts = 500;
   TaskSet random_task_set = TaskSet(0.5);
-
   int previous_hi_demand = sum_dbf_HI(random_task_set, t, ts);
   int previous_un_demand = sum_dbf_UN(random_task_set, t, ts);
   int previous_co_demand = sum_dbf_CO(random_task_set, t, ts);
@@ -69,6 +68,7 @@ TEST(SearchAlgorithm, MinimumDemand) {
       break;
     }
   }
+
   int minimum_demand = demand_based_function_LO(random_hi_task, ts) + demand_based_function_CO(random_hi_task, t, ts);
 
   while (random_hi_task.C_LO < random_hi_task.tight_D) {
@@ -80,58 +80,75 @@ TEST(SearchAlgorithm, MinimumDemand) {
 /* TEST SEARCH ALGORITHM HELPER FUNCTIONS */
 
 TEST(SearchAlgorithm, IsEligible) {
-  TaskSet TaskSet1 = TaskSet({}, false, true, false);
-  TaskSet TaskSet2 = TaskSet({}, false, false, true);
-  TaskSet TaskSet3 = TaskSet({}, true, true, true);
-  TaskSet TaskSet4 = TaskSet({}, false, true, true);
+  TaskSet TaskSet1 = TaskSet({}, true, true, true);
+  TaskSet TaskSet2 = TaskSet({}, true, true, false);
+  TaskSet TaskSet3 = TaskSet({}, true, false, true);
+  TaskSet TaskSet4 = TaskSet({}, true, false, false);
+  TaskSet TaskSet5 = TaskSet({}, false, true, false);
+  TaskSet TaskSet6 = TaskSet({}, false, false, true);
+  TaskSet TaskSet7 = TaskSet({}, false, false, false);
+  TaskSet TaskSetEligible = TaskSet({}, false, true, true);
 
   EXPECT_FALSE(is_eligible(TaskSet1));
   EXPECT_FALSE(is_eligible(TaskSet2));
   EXPECT_FALSE(is_eligible(TaskSet3));
-  EXPECT_TRUE(is_eligible(TaskSet4));
+  EXPECT_FALSE(is_eligible(TaskSet4));
+  EXPECT_FALSE(is_eligible(TaskSet5));
+  EXPECT_FALSE(is_eligible(TaskSet6));
+  EXPECT_FALSE(is_eligible(TaskSet7));
+  EXPECT_TRUE(is_eligible(TaskSetEligible));
 }
 
-TEST(SearchAlgorithm, InitializeCandidates) {
+TEST(SearchAlgorithm, GetBestCandidates) {
   TaskSet random_task_set = TaskSet(0.6);
   int ts = 500;
 
-  deque<int> candidates = initialize_candidates(random_task_set);
-  int best_candidate = candidates[0];
+  deque<int> candidates = get_best_candidates(random_task_set);
+  int best_candidate = candidates.front();
 
   EXPECT_EQ(candidates.size(), random_task_set.get_hi_count());
-  if (random_task_set.get_hi_count() > 0) {
-    for (const auto& [key, task] : random_task_set.get_task_set()) {
-      if (task.L == HI) {
-        EXPECT_TRUE(task.C_HI - task.C_LO <= random_task_set.task_set[best_candidate].C_HI - random_task_set.task_set[best_candidate].C_LO);
-        EXPECT_GE(find_optimal_tight_D(task.T, task.C_LO, task.tight_D, ts), task.C_LO);
-        EXPECT_LE(find_optimal_tight_D(task.T, task.C_LO, task.tight_D, ts), task.D);
-      }
+  for (const auto& [key, task] : random_task_set.get_task_set()) {
+    if (task.L == HI) {
+      EXPECT_TRUE(task.C_HI - task.C_LO <= random_task_set.task_set[best_candidate].C_HI - random_task_set.task_set[best_candidate].C_LO);
     }
   }
 }
 
-TEST(SearchAlgorithm, HelperFunctions) {
+TEST(SearchAlgorithm, NaiveGetHiCandidates) {
+  TaskSet random_task_set = TaskSet(0.5);
+
+  deque<int> hi_candidates = get_hi_candidates(random_task_set);
+
+  EXPECT_EQ(hi_candidates.size(), random_task_set.get_hi_count());
+  for (size_t i = 0; i < hi_candidates.size(); i++) {
+    EXPECT_EQ(random_task_set.get_task_set()[hi_candidates[i]].L, HI);
+  }
+}
+
+TEST(SearchAlgorithm, FailureTimeExists) {
   map<string, vector<Task>> task_set_dict = {};
   task_set_dict["lo"] = {Task(2, 62, 11, 11, 19, 19)};
   task_set_dict["hi"] = {Task(0, 26, 5, 23, 31, 31), Task(1, 55, 10, 27, 356, 356)};
   
   TaskSet task_set = TaskSet(task_set_dict);
-  deque<int> candidates = {0, 1};
-  pair<int, int> failure_time = {31, 9};
+  deque<int> expected_candidates = {0, 1};
+  pair<int, int> expected_failure_time = {31, 9};
 
-  EXPECT_EQ(initialize_candidates(task_set), candidates);
-  EXPECT_EQ(get_failure_time(task_set), failure_time);
+  EXPECT_EQ(get_best_candidates(task_set), expected_candidates);
+  EXPECT_EQ(get_failure_time(task_set), expected_failure_time);
 }
 
-TEST(SearchAlgorithm, GetFailureTimeDoesNotFail) {
+TEST(SearchAlgorithm, FailureTimeDoesNotExist) {
   map<string, vector<Task>> task_set_dict = {};
   task_set_dict["lo"] = {Task(0, 227, 6, 6, 46, 46)};
   task_set_dict["hi"] = {Task(1, 231, 8, 30, 363, 363), Task(2, 66, 14, 36, 150, 150), Task(3, 39, 7, 21, 396, 396), Task(4, 352, 15, 55, 129, 129)};
   
   TaskSet task_set = TaskSet(task_set_dict);
-  pair<int, int> failure_time = {-1, -1};
+  deque<int> expected_candidates = {4, 1, 2, 3};
+  pair<int, int> expected_failure_time = {-1, -1};
 
-  EXPECT_EQ(get_failure_time(task_set), failure_time);
+  EXPECT_EQ(get_best_candidates(task_set), expected_candidates);
+  EXPECT_EQ(get_failure_time(task_set), expected_failure_time);
 }
 
 TEST(SearchAlgorithm, IsDemandAtMinimum) {
@@ -151,17 +168,15 @@ TEST(SearchAlgorithm, FindOptimalTightDWithinBounds) {
 
   TaskSet random_task_set = TaskSet(0.6);
 
-  if (random_task_set.get_hi_count() > 0) {
-    for (const auto& [key, task] : random_task_set.get_task_set()) {
-      if (task.L == HI) {
-        EXPECT_GE(find_optimal_tight_D(task.T, task.C_LO, task.tight_D, ts), task.C_LO);
-        EXPECT_LE(find_optimal_tight_D(task.T, task.C_LO, task.tight_D, ts), task.D);
-      }
+  for (const auto& [key, task] : random_task_set.get_task_set()) {
+    if (task.L == HI) {
+      EXPECT_GE(find_optimal_tight_D(task.T, task.C_LO, task.tight_D, ts), task.C_LO);
+      EXPECT_LE(find_optimal_tight_D(task.T, task.C_LO, task.tight_D, ts), task.D);
     }
   }
 }
 
-TEST(SearchAlgorithm, FindOptimalTightD) {
+TEST(SearchAlgorithm, FindOptimalTightDTask) {
   int ts = 91;
   Task task = Task(-1, 10, 5, 20, 100, 100);
   int previous_tight_D = task.D;
@@ -178,82 +193,41 @@ TEST(SearchAlgorithm, FindOptimalTightD) {
   EXPECT_EQ(tight_D_list, expected_tight_D_list);
 }
 
-/* TEST SEARCH ALGORITHM */
-
-TEST(SearchAlgorithm, NotEligible) {
-  TaskSet task_set = TaskSet({}, true, false, false);
-
-  EXPECT_EQ(deadline_search_algorithm(task_set).first, "Not eligible for deadline-tightening");
-}
-
-TEST(SearchAlgorithm, SuccessTaskSet) {
+TEST(SearchAlgorithm, DemandSumDecreasesWithTightenedDeadlines) {
   map<string, vector<Task>> task_set_dict = {};
   task_set_dict["lo"] = {Task(2, 62, 11, 11, 19, 19)};
   task_set_dict["hi"] = {Task(0, 26, 5, 23, 31, 31), Task(1, 55, 10, 27, 356, 356)};
   TaskSet task_set = TaskSet(task_set_dict);
-  task_set.set_thm1(false);
-  task_set.set_thm2(true);
-  task_set.set_thm3(true);
-
-  string algorithm_result = deadline_search_algorithm(task_set).first;
-
-  EXPECT_EQ(algorithm_result, "Success");
-}
-
-TEST(SearchAlgorithm, DemandSumDecrease) {
-  map<string, vector<Task>> task_set_dict = {};
-  task_set_dict["lo"] = {Task(2, 62, 11, 11, 19, 19)};
-  task_set_dict["hi"] = {Task(0, 26, 5, 23, 31, 31), Task(1, 55, 10, 27, 356, 356)};
-  TaskSet task_set = TaskSet(task_set_dict);
+  task_set.set_thm1(schedulability_test_thm1_parallel(task_set));
+  task_set.set_thm2(schedulability_test_thm2(task_set));
+  task_set.set_thm3(schedulability_test_thm3(task_set));
   auto [t, ts] = get_failure_time(task_set);
-  task_set.set_thm1(false);
-  task_set.set_thm2(true);
-  task_set.set_thm3(true);
-  int best_candidate = initialize_candidates(task_set).front();
-  int T = task_set.task_set[best_candidate].T;
-  int C_LO = task_set.task_set[best_candidate].C_LO;
-  int previous_tight_D = task_set.task_set[best_candidate].tight_D;
+  int best_candidate = get_best_candidates(task_set).front();
 
   int before_demand = sum_dbf(task_set, t, ts);
-  task_set.task_set[best_candidate].tight_D = find_optimal_tight_D(T, C_LO, previous_tight_D, ts);
-
-  EXPECT_LT(sum_dbf(task_set, t, ts), before_demand);
-}
-
-TEST(SearchAlgorithm, TightDDecreased) {
-  map<string, vector<Task>> task_set_dict = {};
-  task_set_dict["lo"] = {Task(2, 62, 11, 11, 19, 19)};
-  task_set_dict["hi"] = {Task(0, 26, 5, 23, 31, 31), Task(1, 55, 10, 27, 356, 356)};
-  TaskSet task_set = TaskSet(task_set_dict);
-  task_set.set_thm1(false);
-  task_set.set_thm2(true);
-  task_set.set_thm3(true);
-
-  int best_candidate = initialize_candidates(task_set).front();
-  TaskSet post_algorithm = deadline_search_algorithm(task_set).second;
-  pair<int, int> failure_time = get_failure_time(post_algorithm);
+  task_set.task_set[best_candidate].tight_D = find_optimal_tight_D(task_set.task_set[best_candidate].T, task_set.task_set[best_candidate].C_LO, task_set.task_set[best_candidate].tight_D, ts);
+  pair<int, int> expected_failure_time = {-1, -1};
 
   EXPECT_LT(task_set.get_task_set()[best_candidate].tight_D, task_set.get_task_set()[best_candidate].D);
-  EXPECT_EQ(failure_time.first, -1);
-  EXPECT_EQ(failure_time.second, -1);
+  EXPECT_LT(sum_dbf(task_set, t, ts), before_demand);
+  EXPECT_EQ(get_failure_time(task_set), expected_failure_time);
 }
 
-TEST(SearchAlgorithm, NaiveGetCandidates) {
-  TaskSet random_task_set = TaskSet(0.5);
+/* TEST DEADLINE SEARCH ALGORITHM */
 
-   deque<int> hi_candidates = get_hi_candidates(random_task_set);
+TEST(SearchAlgorithm, EDSNotEligible) {
+  TaskSet task_set = TaskSet({}, true, false, false);
 
-   for (size_t i = 0; i < hi_candidates.size(); i++) {
-    EXPECT_EQ(random_task_set.get_task_set()[hi_candidates[i]].L, HI);
-  }
+  EXPECT_FALSE(is_eligible(task_set));
+  EXPECT_EQ(deadline_search_algorithm(task_set), "Not eligible for deadline-tightening");
 }
 
-TEST(SearchAlgorithm, NaiveTightD) {
-  TaskSet random_task_set = TaskSet(0.5);
+TEST(SearchAlgorithm, EDSTightDWithinBounds) {
+  TaskSet task_set = TaskSet(0.5);
 
-  auto [result, changed_task_set] = naive_algorithm(random_task_set);
-
-  for (const auto& [key, task] : changed_task_set.get_task_set()) {
+  deadline_search_algorithm(task_set); 
+  
+  for (const auto& [key, task] : task_set.get_task_set()) {
     if (task.L == HI) {
       EXPECT_GE(task.tight_D, task.C_LO);
       EXPECT_LE(task.tight_D, task.D);
@@ -261,4 +235,173 @@ TEST(SearchAlgorithm, NaiveTightD) {
   }
 }
 
+TEST(SearchAlgorithm, EDSNoMoreEligible) {
+  map<string, vector<Task>> task_set_dict = {};
+  task_set_dict["lo"] = { Task(0,18,5,5,7,7), \
+                          Task(2,197,24,24,473,473), \
+                          Task(4,118,16,16,315,315), \
+                          Task(5,157,22,22,277,277)};
+  task_set_dict["hi"] = { Task(1,360,24,94,377,377), \
+                          Task(3,480,12,29,33,33)};
+
+  TaskSet task_set = TaskSet(task_set_dict);
+  task_set.set_thm1(schedulability_test_thm1_parallel(task_set));
+  task_set.set_thm2(schedulability_test_thm2(task_set));
+  task_set.set_thm3(schedulability_test_thm3(task_set));
+
+  EXPECT_TRUE(is_eligible(task_set));
+  EXPECT_EQ(deadline_search_algorithm(task_set), "No more eligible candidates");
+}
+
+TEST(SearchAlgorithm, EDSSuccess) {
+  map<string, vector<Task>> task_set_dict = {};
+  task_set_dict["lo"] = {Task(0,230,16,16,158,158), \
+                         Task(6,427,23,23,202,202), \
+                         Task(7,124,11,11,467,467), \
+                         Task(9,397,21,21,82,82)};
+  task_set_dict["hi"] = {Task(1,353,25,78,497,497), \
+                         Task(2,473,19,45,314,314), \
+                         Task(3,293,16,34,87,87), \
+                         Task(4,394,11,31,59,59), \
+                         Task(5,492,24,90,232,232), \
+                         Task(8,473,7,16,255,255)};
+                          
+  TaskSet task_set = TaskSet(task_set_dict);
+  task_set.set_thm1(schedulability_test_thm1_parallel(task_set));
+  task_set.set_thm2(schedulability_test_thm2(task_set));
+  task_set.set_thm3(schedulability_test_thm3(task_set));
+
+  pair<int, int> expected_failure_time = {-1, -1};
+
+  EXPECT_TRUE(is_eligible(task_set));
+  EXPECT_EQ(deadline_search_algorithm(task_set), "Success");
+  EXPECT_EQ(task_set.get_num_tasks(), 10);
+  EXPECT_EQ(get_failure_time(task_set), expected_failure_time);
+  for (const auto& [key, task] : task_set.get_task_set()) {
+    if (task.L == HI) {
+      EXPECT_GE(task.tight_D, task.C_LO);
+      EXPECT_LE(task.tight_D, task.D);
+    }
+  }
+}
+
+/* TEST NAIVE SEARCH ALGORITHM */
+
+TEST(SearchAlgorithm, NaiveNotEligible) {
+  TaskSet task_set = TaskSet({}, true, false, false);
+
+  EXPECT_FALSE(is_eligible(task_set));
+  EXPECT_EQ(naive_algorithm(task_set), "Not eligible for deadline-tightening");
+}
+
+TEST(SearchAlgorithm, NaiveTightDWithinBounds) {
+  TaskSet task_set = TaskSet(0.1);
+
+  naive_algorithm(task_set); 
+  
+  for (const auto& [key, task] : task_set.get_task_set()) {
+    if (task.L == HI) {
+      EXPECT_GE(task.tight_D, task.C_LO);
+      EXPECT_LE(task.tight_D, task.D);
+    }
+  }
+}
+
+TEST(SearchAlgorithm, NaiveNoMoreEligible) {
+  map<string, vector<Task>> task_set_dict = {};
+  task_set_dict["lo"] = { Task(0,18,5,5,7,7), \
+                          Task(2,197,24,24,473,473), \
+                          Task(4,118,16,16,315,315), \
+                          Task(5,157,22,22,277,277)};
+  task_set_dict["hi"] = { Task(1,360,24,94,377,377), \
+                          Task(3,480,12,29,33,33)};
+
+  TaskSet task_set = TaskSet(task_set_dict);
+  task_set.set_thm1(schedulability_test_thm1_parallel(task_set));
+  task_set.set_thm2(schedulability_test_thm2(task_set));
+  task_set.set_thm3(schedulability_test_thm3(task_set));
+
+  EXPECT_TRUE(is_eligible(task_set));
+  EXPECT_EQ(naive_algorithm(task_set), "No more eligible candidates");
+}
+
+TEST(SearchAlgorithm, NaiveSuccess) {
+  map<string, vector<Task>> task_set_dict = {};
+  task_set_dict["lo"] = {Task(0,230,16,16,158,158), \
+                         Task(6,427,23,23,202,202), \
+                         Task(7,124,11,11,467,467), \
+                         Task(9,397,21,21,82,82)};
+  task_set_dict["hi"] = {Task(1,353,25,78,497,497), \
+                         Task(2,473,19,45,314,314), \
+                         Task(3,293,16,34,87,87), \
+                         Task(4,394,11,31,59,59), \
+                         Task(5,492,24,90,232,232), \
+                         Task(8,473,7,16,255,255)};
+                          
+  TaskSet task_set = TaskSet(task_set_dict);
+  task_set.set_thm1(schedulability_test_thm1_parallel(task_set));
+  task_set.set_thm2(schedulability_test_thm2(task_set));
+  task_set.set_thm3(schedulability_test_thm3(task_set));
+  pair<int, int> expected_failure_time = {-1, -1};
+
+  EXPECT_TRUE(is_eligible(task_set));
+  EXPECT_EQ(deadline_search_algorithm(task_set), "Success");
+  EXPECT_EQ(task_set.get_num_tasks(), 10);
+  EXPECT_EQ(get_failure_time(task_set), expected_failure_time);
+  for (const auto& [key, task] : task_set.get_task_set()) {
+    if (task.L == HI) {
+      EXPECT_GE(task.tight_D, task.C_LO);
+      EXPECT_LE(task.tight_D, task.D);
+    }
+  }
+}
+
+/* TEST SEARCH ALGORITHM OTHER */
+
+TEST(SearchAlgorithm, EDSFailsNaiveSucceeds) {
+  map<string, vector<Task>> task_set_dict = {};
+  task_set_dict["lo"] = {Task(0,456,25,25,140,140), \
+                         Task(4,493,23,23,35,35)};
+  task_set_dict["hi"] = {Task(1,395,9,34,50,50), \
+                         Task(2,154,17,36,275,275), \
+                         Task(3,321,11,43,273,273), \
+                         Task(5,197,12,29,409,409)};
+                          
+  TaskSet task_set = TaskSet(task_set_dict);
+  task_set.set_thm1(schedulability_test_thm1_parallel(task_set));
+  task_set.set_thm2(schedulability_test_thm2(task_set));
+  task_set.set_thm3(schedulability_test_thm3(task_set));
+  TaskSet naive_task_set = task_set;
+  deque<int> expected_candidates = {3, 1, 2, 5};
+  deque<int> expected_hi_candidates = {1, 2, 3, 5};
+
+
+  EXPECT_TRUE(is_eligible(task_set));
+  EXPECT_NE(&task_set, &naive_task_set);
+  EXPECT_EQ(get_best_candidates(task_set), expected_candidates);
+  EXPECT_EQ(get_hi_candidates(naive_task_set), expected_hi_candidates);
+  EXPECT_EQ(deadline_search_algorithm(task_set), "No more eligible candidates");
+  cout << task_set.task_set_to_string() << endl;
+  EXPECT_EQ(naive_algorithm(naive_task_set), "Success");
+}
+
+
+// // TEST(SearchAlgorithm, CopiedTaskSets) {
+// //   for (int i = 0; i < 1000; ++i) {
+// //     TaskSet eds_task_set = TaskSet(0.35);
+// //     eds_task_set.set_thm1(schedulability_test_thm1_parallel(eds_task_set));
+// //     eds_task_set.set_thm2(schedulability_test_thm2(eds_task_set));
+// //     eds_task_set.set_thm3(schedulability_test_thm3(eds_task_set));
+// //     if (!is_eligible(eds_task_set)) continue;
+// //     TaskSet naive_task_set = eds_task_set;
+
+// //     string eds_result = deadline_search_algorithm(eds_task_set);
+// //     string naive_result = naive_algorithm(naive_task_set);
+
+// //     if (eds_result != naive_result) {
+// //       cout << "EDS -- " << eds_result << " -- " << eds_task_set.task_set_to_string() << endl;
+// //       cout << "NAIVE -- " << naive_result << " -- " << naive_task_set.task_set_to_string() << endl;
+// //     }
+// //   }
+// // }
 #endif
