@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "../src/generate_task_set.h"
+#include "../src/schedulability.h"
 
 /* TEST TASK SET */ 
 
@@ -21,7 +22,28 @@ TEST(GenerateTaskSet, GenerateRandomTaskSet) {
   EXPECT_EQ(random_task_set.get_num_tasks(), random_task_set.get_task_set().size());
 }
 
-TEST(GenerateTaskSet, TaskSet) {
+TEST(GenerateTaskSet, CopyTaskSet) {
+  TaskSet random_task_set = TaskSet(0.5);
+  random_task_set.set_thm1(schedulability_test_thm1_parallel(random_task_set));
+  random_task_set.set_thm2(schedulability_test_thm2(random_task_set));
+  random_task_set.set_thm3(schedulability_test_thm3(random_task_set));
+
+  TaskSet copy_task_set = random_task_set;
+
+  EXPECT_NE(&random_task_set, &copy_task_set);
+  EXPECT_EQ(random_task_set.get_num_tasks(), copy_task_set.get_num_tasks());
+  EXPECT_LT(random_task_set.get_utilization() - copy_task_set.get_utilization(), 0.05);
+  EXPECT_EQ(random_task_set.get_t_max(), copy_task_set.get_t_max());
+  EXPECT_EQ(random_task_set.get_thm1(), copy_task_set.get_thm1());
+  EXPECT_EQ(random_task_set.get_thm2(), copy_task_set.get_thm2());
+  EXPECT_EQ(random_task_set.get_thm3(), copy_task_set.get_thm3());
+
+  for (int i = 0; i < random_task_set.get_num_tasks(); ++i) {
+    EXPECT_EQ(random_task_set.get_task_set()[i], copy_task_set.get_task_set()[i]);
+  }
+}
+
+TEST(GenerateTaskSet, TaskSetTMax) {
   map<string, vector<Task>> task_set_dict = {};
   task_set_dict["lo"] = {Task(0, 414, 13, 13, 300, 300), Task(3, 115, 14, 14, 267, 267), Task(5, 94, 7, 7, 172, 172)};
   task_set_dict["hi"] = {Task(1, 122, 23, 46, 312, 312), Task(2, 108, 18, 37, 107, 107), Task(4, 132, 15, 50, 233, 233)};

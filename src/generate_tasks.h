@@ -51,6 +51,16 @@ struct Task {
     return *this;
   }
 
+  bool operator==(const Task& other) const {
+    return this->ID == other.ID &&
+           this->T == other.T &&
+           this->C_LO == other.C_LO &&
+           this->C_HI == other.C_HI &&
+           this->D == other.D &&
+           this->tight_D == other.tight_D &&
+           this->L == other.L;
+  }
+
   string task_to_string() const {
     return "Task(" + to_string(ID) + "," + to_string(T) + "," + to_string(C_LO) + "," + to_string(C_HI) + "," + to_string(D) + "," + to_string(tight_D) + ")";
   }

@@ -10,7 +10,9 @@ public:
   double utilization, t_max;
   bool thm1, thm2, thm3;
 
-  TaskSet(double target_u = 0, double hi_probability = 0.5, int wcet_ratio = 4) {
+  TaskSet() {}
+
+  TaskSet(double target_u, double hi_probability = 0.5, int wcet_ratio = 4) {
     this->task_set = {};
     this->num_tasks = 0;
     this->lo_tasks_list = {};
@@ -41,7 +43,7 @@ public:
 
       else if (this->utilization > target_u + 0.005) {
         this->task_set.clear();
-        this->num_tasks = this->task_set.size();
+        this->num_tasks = 0;
         this->lo_tasks_list.clear();
         this->hi_tasks_list.clear();
       }
@@ -50,12 +52,12 @@ public:
     this->t_max = calculate_t_max();
   } 
 
-  TaskSet(map<string, vector<Task>> TaskSet_dict = {}, bool thm1 = false, bool thm2 = false, bool thm3 = false) {
+  TaskSet(map<string, vector<Task>> task_set_dict, bool thm1 = false, bool thm2 = false, bool thm3 = false) {
     this->thm1 = thm1;
     this->thm2 = thm2;
     this->thm3 = thm3;
-    this->lo_tasks_list = TaskSet_dict["lo"];
-    this->hi_tasks_list = TaskSet_dict["hi"]; 
+    this->lo_tasks_list = task_set_dict["lo"];
+    this->hi_tasks_list = task_set_dict["hi"]; 
     
     for (Task task : this->lo_tasks_list) {
       this->task_set[task.ID] = task;
