@@ -94,6 +94,7 @@ TEST(GenerateTasks, AssignmentAndEqualOperator) {
   EXPECT_EQ(task.L, copy.L);
 
   EXPECT_TRUE(task == copy);
+  EXPECT_TRUE(task == task);
 }
 
 #endif

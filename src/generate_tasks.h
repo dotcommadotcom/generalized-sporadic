@@ -52,6 +52,8 @@ struct Task {
   }
 
   bool operator==(const Task& other) const {
+    if (this == &other) return true; 
+    
     return this->ID == other.ID &&
            this->T == other.T &&
            this->C_LO == other.C_LO &&
