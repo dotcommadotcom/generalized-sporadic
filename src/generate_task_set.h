@@ -89,6 +89,23 @@ public:
     return *this;
   }
 
+  bool operator==(const TaskSet& other) const {
+    if (this == &other) return true; 
+
+    for (auto& [key, task] : task_set) {
+      if (task == other.get_task_set()[key]) {
+        continue;
+      } else return false;
+    }
+
+    return this->num_tasks == other.num_tasks &&
+           this->utilization == other.utilization &&
+           this->t_max == other.t_max &&
+           this->thm1 == other.thm1 &&
+           this->thm2 == other.thm2 &&
+           this->thm3 == other.thm3;
+  }
+
   double calculate_t_max() {
     double lcm = lcmT_maxD();
     double u = U_maxTD();

@@ -22,27 +22,6 @@ TEST(GenerateTaskSet, GenerateRandomTaskSet) {
   EXPECT_EQ(random_task_set.get_num_tasks(), random_task_set.get_task_set().size());
 }
 
-TEST(GenerateTaskSet, CopyTaskSet) {
-  TaskSet random_task_set = TaskSet(0.5);
-  random_task_set.set_thm1(schedulability_test_thm1_parallel(random_task_set));
-  random_task_set.set_thm2(schedulability_test_thm2(random_task_set));
-  random_task_set.set_thm3(schedulability_test_thm3(random_task_set));
-
-  TaskSet copy_task_set = random_task_set;
-
-  EXPECT_NE(&random_task_set, &copy_task_set);
-  EXPECT_EQ(random_task_set.get_num_tasks(), copy_task_set.get_num_tasks());
-  EXPECT_LT(random_task_set.get_utilization() - copy_task_set.get_utilization(), 0.05);
-  EXPECT_EQ(random_task_set.get_t_max(), copy_task_set.get_t_max());
-  EXPECT_EQ(random_task_set.get_thm1(), copy_task_set.get_thm1());
-  EXPECT_EQ(random_task_set.get_thm2(), copy_task_set.get_thm2());
-  EXPECT_EQ(random_task_set.get_thm3(), copy_task_set.get_thm3());
-
-  for (int i = 0; i < random_task_set.get_num_tasks(); ++i) {
-    EXPECT_EQ(random_task_set.get_task_set()[i], copy_task_set.get_task_set()[i]);
-  }
-}
-
 TEST(GenerateTaskSet, TaskSetTMax) {
   map<string, vector<Task>> task_set_dict = {};
   task_set_dict["lo"] = {Task(0, 414, 13, 13, 300, 300), Task(3, 115, 14, 14, 267, 267), Task(5, 94, 7, 7, 172, 172)};
@@ -62,6 +41,31 @@ TEST(GenerateTaskSet, ConstrainDeadlines) {
   for (auto& [key, task] : random_task_set_copy.get_task_set()) {
     EXPECT_LE(task.D, task.T);
   }
+}
+
+/* TEST OVERLOADED OPERATOR */ 
+
+TEST(GenerateTaskSet, AssignmentAndEqualOperator) {
+  TaskSet random_task_set = TaskSet(0.5);
+  random_task_set.set_thm1(schedulability_test_thm1_parallel(random_task_set));
+  random_task_set.set_thm2(schedulability_test_thm2(random_task_set));
+  random_task_set.set_thm3(schedulability_test_thm3(random_task_set));
+
+  TaskSet copy_task_set = random_task_set;
+
+  EXPECT_NE(&random_task_set, &copy_task_set);
+  EXPECT_EQ(random_task_set.get_num_tasks(), copy_task_set.get_num_tasks());
+  EXPECT_LT(random_task_set.get_utilization() - copy_task_set.get_utilization(), 0.05);
+  EXPECT_EQ(random_task_set.get_t_max(), copy_task_set.get_t_max());
+  EXPECT_EQ(random_task_set.get_thm1(), copy_task_set.get_thm1());
+  EXPECT_EQ(random_task_set.get_thm2(), copy_task_set.get_thm2());
+  EXPECT_EQ(random_task_set.get_thm3(), copy_task_set.get_thm3());
+  for (int i = 0; i < random_task_set.get_num_tasks(); ++i) {
+    EXPECT_EQ(random_task_set.get_task_set()[i], copy_task_set.get_task_set()[i]);
+  }
+
+  EXPECT_TRUE(random_task_set == random_task_set);
+  EXPECT_TRUE(random_task_set == copy_task_set);
 }
 
 #endif
