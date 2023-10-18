@@ -108,8 +108,6 @@ string deadline_search_algorithm(TaskSet& task_set) {
   return "No more eligible candidates";
 }
 
-
-
 string naive_algorithm(TaskSet& task_set) {
   if (!is_eligible(task_set)) return "Not eligible for deadline-tightening";
 

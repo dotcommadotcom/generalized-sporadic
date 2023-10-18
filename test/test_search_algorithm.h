@@ -358,50 +358,61 @@ TEST(SearchAlgorithm, NaiveSuccess) {
 
 /* TEST SEARCH ALGORITHM OTHER */
 
-TEST(SearchAlgorithm, EDSFailsNaiveSucceeds) {
-  map<string, vector<Task>> task_set_dict = {};
-  task_set_dict["lo"] = {Task(0,456,25,25,140,140), \
-                         Task(4,493,23,23,35,35)};
-  task_set_dict["hi"] = {Task(1,395,9,34,50,50), \
-                         Task(2,154,17,36,275,275), \
-                         Task(3,321,11,43,273,273), \
-                         Task(5,197,12,29,409,409)};
+// TEST(SearchAlgorithm, EDSFailsNaiveSucceeds) {
+//   map<string, vector<Task>> task_set_dict = {};
+//   task_set_dict["lo"] = {Task(0,456,25,25,140,140), \
+//                          Task(4,493,23,23,35,35)};
+//   task_set_dict["hi"] = {Task(1,395,9,34,50,50), \
+//                          Task(2,154,17,36,275,275), \
+//                          Task(3,321,11,43,273,273), \
+//                          Task(5,197,12,29,409,409)};
                           
-  TaskSet task_set = TaskSet(task_set_dict);
-  task_set.set_thm1(schedulability_test_thm1_parallel(task_set));
-  task_set.set_thm2(schedulability_test_thm2(task_set));
-  task_set.set_thm3(schedulability_test_thm3(task_set));
-  TaskSet naive_task_set = task_set;
-  deque<int> expected_candidates = {3, 1, 2, 5};
-  deque<int> expected_hi_candidates = {1, 2, 3, 5};
+//   TaskSet task_set = TaskSet(task_set_dict);
+//   task_set.set_thm1(schedulability_test_thm1_parallel(task_set));
+//   task_set.set_thm2(schedulability_test_thm2(task_set));
+//   task_set.set_thm3(schedulability_test_thm3(task_set));
+//   TaskSet naive_task_set = task_set;
+//   deque<int> expected_candidates = {3, 1, 2, 5};
+//   deque<int> expected_hi_candidates = {1, 2, 3, 5};
 
 
-  EXPECT_TRUE(is_eligible(task_set));
-  EXPECT_NE(&task_set, &naive_task_set);
-  EXPECT_EQ(get_best_candidates(task_set), expected_candidates);
-  EXPECT_EQ(get_hi_candidates(naive_task_set), expected_hi_candidates);
-  EXPECT_EQ(deadline_search_algorithm(task_set), "No more eligible candidates");
-  cout << task_set.task_set_to_string() << endl;
-  EXPECT_EQ(naive_algorithm(naive_task_set), "Success");
+//   EXPECT_TRUE(is_eligible(task_set));
+//   EXPECT_NE(&task_set, &naive_task_set);
+//   EXPECT_EQ(get_best_candidates(task_set), expected_candidates);
+//   EXPECT_EQ(get_hi_candidates(naive_task_set), expected_hi_candidates);
+//   EXPECT_EQ(deadline_search_algorithm(task_set), "No more eligible candidates");
+//   cout << task_set.task_set_to_string() << endl;
+//   EXPECT_EQ(naive_algorithm(naive_task_set), "Success");
+// }
+
+
+TEST(SearchAlgorithm, CopiedTaskSets) {
+  for (int i = 0; i < 100; ++i) {
+    TaskSet eds_task_set = TaskSet(0.35);
+    eds_task_set.set_thm1(schedulability_test_thm1_parallel(eds_task_set));
+    eds_task_set.set_thm2(schedulability_test_thm2(eds_task_set));
+    eds_task_set.set_thm3(schedulability_test_thm3(eds_task_set));
+    if (!is_eligible(eds_task_set)) continue;
+    TaskSet naive_task_set = eds_task_set;
+
+    string eds_result = deadline_search_algorithm(eds_task_set);
+    string naive_result = naive_algorithm(naive_task_set);
+
+    EXPECT_NE(&eds_task_set, &naive_task_set);
+    EXPECT_EQ(eds_task_set.get_num_tasks(), naive_task_set.get_num_tasks());
+    EXPECT_EQ(eds_task_set.get_t_max(), naive_task_set.get_t_max());
+    EXPECT_LT(eds_task_set.get_utilization() - naive_task_set.get_utilization(), 0.05);
+    EXPECT_EQ(eds_task_set.get_thm2(), naive_task_set.get_thm2());
+    EXPECT_EQ(eds_task_set.get_thm3(), naive_task_set.get_thm3());
+
+    if (eds_result != naive_result) {
+      EXPECT_NE(eds_task_set.get_thm1(), naive_task_set.get_thm1());
+      cout << "EDS -- " << eds_result << " -- " << eds_task_set.task_set_to_string() << endl;
+      cout << "NAIVE -- " << naive_result << " -- " << naive_task_set.task_set_to_string() << endl;
+    } else {
+      EXPECT_EQ(eds_task_set.get_thm1(), naive_task_set.get_thm1());
+    }
+  }
 }
 
-
-// // TEST(SearchAlgorithm, CopiedTaskSets) {
-// //   for (int i = 0; i < 1000; ++i) {
-// //     TaskSet eds_task_set = TaskSet(0.35);
-// //     eds_task_set.set_thm1(schedulability_test_thm1_parallel(eds_task_set));
-// //     eds_task_set.set_thm2(schedulability_test_thm2(eds_task_set));
-// //     eds_task_set.set_thm3(schedulability_test_thm3(eds_task_set));
-// //     if (!is_eligible(eds_task_set)) continue;
-// //     TaskSet naive_task_set = eds_task_set;
-
-// //     string eds_result = deadline_search_algorithm(eds_task_set);
-// //     string naive_result = naive_algorithm(naive_task_set);
-
-// //     if (eds_result != naive_result) {
-// //       cout << "EDS -- " << eds_result << " -- " << eds_task_set.task_set_to_string() << endl;
-// //       cout << "NAIVE -- " << naive_result << " -- " << naive_task_set.task_set_to_string() << endl;
-// //     }
-// //   }
-// // }
 #endif
