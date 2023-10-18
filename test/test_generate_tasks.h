@@ -77,4 +77,23 @@ TEST(GenerateTasks, GenerateRandomTask) {
   EXPECT_LE(random_task.C_HI, random_task.T);
 }
 
+/* TEST OVERLOADED OPERATOR */ 
+
+TEST(GenerateTasks, AssignmentAndEqualOperator) {
+  Task task = generate_task(-1);
+
+  Task copy = task;
+
+  EXPECT_NE(&task, &copy);
+  EXPECT_EQ(task.ID, copy.ID);
+  EXPECT_EQ(task.T, copy.T);
+  EXPECT_EQ(task.C_LO, copy.C_LO);
+  EXPECT_EQ(task.C_HI, copy.C_HI);
+  EXPECT_EQ(task.D, copy.D);
+  EXPECT_EQ(task.tight_D, copy.tight_D);
+  EXPECT_EQ(task.L, copy.L);
+
+  EXPECT_TRUE(task == copy);
+}
+
 #endif
