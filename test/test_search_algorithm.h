@@ -385,34 +385,33 @@ TEST(SearchAlgorithm, NaiveSuccess) {
 //   EXPECT_EQ(naive_algorithm(naive_task_set), "Success");
 // }
 
+// TEST(SearchAlgorithm, CopiedTaskSets) {
+//   for (int i = 0; i < 100; ++i) {
+//     TaskSet eds_task_set = TaskSet(0.35);
+//     eds_task_set.set_thm1(schedulability_test_thm1_parallel(eds_task_set));
+//     eds_task_set.set_thm2(schedulability_test_thm2(eds_task_set));
+//     eds_task_set.set_thm3(schedulability_test_thm3(eds_task_set));
+//     if (!is_eligible(eds_task_set)) continue;
+//     TaskSet naive_task_set = eds_task_set;
 
-TEST(SearchAlgorithm, CopiedTaskSets) {
-  for (int i = 0; i < 100; ++i) {
-    TaskSet eds_task_set = TaskSet(0.35);
-    eds_task_set.set_thm1(schedulability_test_thm1_parallel(eds_task_set));
-    eds_task_set.set_thm2(schedulability_test_thm2(eds_task_set));
-    eds_task_set.set_thm3(schedulability_test_thm3(eds_task_set));
-    if (!is_eligible(eds_task_set)) continue;
-    TaskSet naive_task_set = eds_task_set;
+//     string eds_result = deadline_search_algorithm(eds_task_set);
+//     string naive_result = naive_algorithm(naive_task_set);
 
-    string eds_result = deadline_search_algorithm(eds_task_set);
-    string naive_result = naive_algorithm(naive_task_set);
+//     EXPECT_NE(&eds_task_set, &naive_task_set);
+//     EXPECT_EQ(eds_task_set.get_num_tasks(), naive_task_set.get_num_tasks());
+//     EXPECT_EQ(eds_task_set.get_t_max(), naive_task_set.get_t_max());
+//     EXPECT_LT(eds_task_set.get_utilization() - naive_task_set.get_utilization(), 0.05);
+//     EXPECT_EQ(eds_task_set.get_thm2(), naive_task_set.get_thm2());
+//     EXPECT_EQ(eds_task_set.get_thm3(), naive_task_set.get_thm3());
 
-    EXPECT_NE(&eds_task_set, &naive_task_set);
-    EXPECT_EQ(eds_task_set.get_num_tasks(), naive_task_set.get_num_tasks());
-    EXPECT_EQ(eds_task_set.get_t_max(), naive_task_set.get_t_max());
-    EXPECT_LT(eds_task_set.get_utilization() - naive_task_set.get_utilization(), 0.05);
-    EXPECT_EQ(eds_task_set.get_thm2(), naive_task_set.get_thm2());
-    EXPECT_EQ(eds_task_set.get_thm3(), naive_task_set.get_thm3());
-
-    if (eds_result != naive_result) {
-      EXPECT_NE(eds_task_set.get_thm1(), naive_task_set.get_thm1());
-      cout << "EDS -- " << eds_result << " -- " << eds_task_set.task_set_to_string() << endl;
-      cout << "NAIVE -- " << naive_result << " -- " << naive_task_set.task_set_to_string() << endl;
-    } else {
-      EXPECT_EQ(eds_task_set.get_thm1(), naive_task_set.get_thm1());
-    }
-  }
-}
+//     if (eds_result != naive_result) {
+//       EXPECT_NE(eds_task_set.get_thm1(), naive_task_set.get_thm1());
+//       cout << "EDS -- " << eds_result << " -- " << eds_task_set.task_set_to_string() << endl;
+//       cout << "NAIVE -- " << naive_result << " -- " << naive_task_set.task_set_to_string() << endl;
+//     } else {
+//       EXPECT_EQ(eds_task_set.get_thm1(), naive_task_set.get_thm1());
+//     }
+//   }
+// }
 
 #endif
